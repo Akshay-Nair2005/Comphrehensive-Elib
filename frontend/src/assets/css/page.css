@@ -1,0 +1,30 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f9;
+  margin: 0;
+}
+
+.btn {
+  position: relative;
+  display: inline-block;
+  padding: 10px 30px;
+  font-size: 17px;
+  color: white;
+  background: linear-gradient(to right, #f87871 50%, #383838 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+  border: white;
+
+  /* border-radius: 50%; */
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background-position 0.4s ease, color 0.4s ease;
+}
+
+.btn:hover {
+  background-position: left bottom;
+  color: white;
+}
