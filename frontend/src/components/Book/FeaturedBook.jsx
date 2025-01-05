@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import BookListing from "./BookListing";
 import axios from "axios";
-import { Link } from 'react-router-dom';
-import { FaArrowRight } from 'react-icons/fa';
-import { Navigation, Pagination,Autoplay  } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css/autoplay";
 
 const FeaturedBook = ({ isHome }) => {
   const [books, setBooks] = useState([]);
@@ -55,11 +55,11 @@ const FeaturedBook = ({ isHome }) => {
             slidesPerView={1}
             loop={true}
             navigation
-            pagination={{ clickable: true }}
+            // pagination={{ clickable: true }}
             modules={[Navigation, Pagination]}
             autoplay
-            speed= {800}
-            autoplayDisableOnInteraction= {false}
+            speed={800}
+            // autoplayDisableOnInteraction= {false}
             breakpoints={{
               640: { slidesPerView: 2 },
               768: { slidesPerView: 3 },
@@ -67,9 +67,8 @@ const FeaturedBook = ({ isHome }) => {
             }}
             className="w-full"
             style={{
-              '--swiper-navigation-color': '#ff5733',
+              "--swiper-navigation-color": "#ff5733",
             }}
-
           >
             {FeaturedBooks.map((novel) => (
               <SwiperSlide key={novel.$id}>

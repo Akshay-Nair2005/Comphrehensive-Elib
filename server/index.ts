@@ -15,6 +15,8 @@ const PORT = 5000;
 const cors = require("cors");
 app.use(cors());
 
+const bodyParser = require("body-parser")
+app.use(bodyParser.json())
 // Middleware to parse JSON bodies
 app.use(express.json());
 
@@ -124,6 +126,44 @@ app.post("/chapters", async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ error: "Failed to save chapter." });
     }
 });
+
+// Endpoint to create a new hosted book
+app.post("/hbookks", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { hbook_name, hbook_genre, hbook_desc, hbook_author, hbook_authdesc, hbook_novelimg } = req.body;
+
+        // Validate required fields
+        if (!hbook_name || !hbook_genre || !hbook_desc || !hbook_author) {
+            res.status(400).json({ error: "All fields except novel image are required." });
+            return;
+        }
+
+        const databaseId = process.env.VITE_DATABASE || "";
+        const collectionId = process.env.VITE_COLLECTION_ID_HOSTEDBOOKS || "";
+
+        // Create a new document in the Hosted Books collection
+        const response = await databases.createDocument(
+            databaseId,
+            collectionId,
+            ID.unique(),
+            {
+                hbook_name,
+                hbook_genre,
+                hbook_desc,
+                hbook_author,
+                hbook_authdesc,
+                hbook_novelimg: hbook_novelimg || "", // Optional field
+                chapters: [], // Initialize with an empty chapters array
+            }
+        );
+
+        res.status(201).json(response);
+    } catch (error) {
+        console.error("Error creating hosted book:", error);
+        res.status(500).json({ error: "Failed to create hosted book." });
+    }
+});
+
 
 // Start the server
 app.listen(PORT, () => {

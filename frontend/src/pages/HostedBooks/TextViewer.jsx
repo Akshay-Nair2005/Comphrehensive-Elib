@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaMoon, FaSun, FaPlus, FaMinus, FaBars, FaTimes } from "react-icons/fa";
+import {
+  FaMoon,
+  FaSun,
+  FaPlus,
+  FaMinus,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 
-const BookViewer = () => {
+export const TextViewer = () => {
   const { hbookTId } = useParams(); // Extract ID from the URL
   const [chapters, setChapters] = useState([]);
   const [currentChapter, setCurrentChapter] = useState(null);
@@ -14,7 +21,9 @@ const BookViewer = () => {
   useEffect(() => {
     const fetchChapters = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/hbooks/${hbookTId}`); // Fetch chapters using ID from URL
+        const response = await fetch(
+          `http://localhost:5000/hbooks/${hbookTId}`
+        ); // Fetch chapters using ID from URL
         if (!response.ok) {
           throw new Error("Failed to fetch chapters");
         }
@@ -36,20 +45,29 @@ const BookViewer = () => {
   }, [hbookTId]);
 
   const handleZoomIn = () => setFontSize((prev) => prev + 2);
-  const handleZoomOut = () => setFontSize((prev) => (prev > 10 ? prev - 2 : prev));
+  const handleZoomOut = () =>
+    setFontSize((prev) => (prev > 10 ? prev - 2 : prev));
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   if (loading) {
-    return <div className="text-center p-6 text-white">Loading chapters...</div>;
+    return (
+      <div className="text-center p-6 text-white">Loading chapters...</div>
+    );
   }
 
   if (!chapters.length) {
-    return <div className="text-center p-6 text-white ">No chapters available.</div>;
+    return (
+      <div className="text-center p-6 text-white ">No chapters available.</div>
+    );
   }
 
   return (
-    <div className={`flex flex-col min-h-screen ${darkMode ? "bg-[#021331] text-white" : "bg-white text-black"}`}>
+    <div
+      className={`flex flex-col min-h-screen ${
+        darkMode ? "bg-[#021331] text-white" : "bg-white text-black"
+      }`}
+    >
       {/* Top Bar */}
       <div className="flex items-center h-16 justify-between px-4 py-2 border-b border-gray-700">
         <div className="flex items-center space-x-4">
@@ -86,7 +104,9 @@ const BookViewer = () => {
       <div className="flex flex-1">
         {/* Sidebar for Chapters */}
         <div
-          className={`w-64 border-r border-gray-300 dark:border-gray-700 ${isSidebarOpen ? "block" : "hidden"} sticky top-0 h-screen`}
+          className={`w-64 border-r border-gray-300 dark:border-gray-700 ${
+            isSidebarOpen ? "block" : "hidden"
+          } sticky top-0 h-screen`}
         >
           <div className="p-4">
             <h2 className="text-lg font-bold mb-4">Chapters</h2>
@@ -95,10 +115,12 @@ const BookViewer = () => {
                 <li
                   key={index}
                   onClick={() => setCurrentChapter(chapter)}
-                  className={`cursor-pointer p-2 rounded ${currentChapter && currentChapter.Chapter_title === chapter.Chapter_title
-                    ? "bg-button text-white"
-                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                    }`}
+                  className={`cursor-pointer p-2 rounded ${
+                    currentChapter &&
+                    currentChapter.Chapter_title === chapter.Chapter_title
+                      ? "bg-button text-white"
+                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                  }`}
                 >
                   {chapter.Chapter_title}
                 </li>
@@ -108,14 +130,16 @@ const BookViewer = () => {
         </div>
 
         {/* Main Viewer */}
-        <div className="flex-1 p-6 overflow-y-auto" style={{ fontSize: `${fontSize}px` }}>
-          {currentChapter?.Chapter_content
-            ?.replace(/\r\n/g, '\n') // Normalize Windows-style line endings
-            ?.replace(/\r/g, '\n')   // Normalize old Mac-style line endings
-            ?.split('\n')            // Split into paragraphs
+        <div
+          className="flex-1 p-6 overflow-y-auto"
+          style={{ fontSize: `${fontSize}px` }}
+        >
+          {currentChapter?.Chapter_content?.replace(/\r\n/g, "\n") // Normalize Windows-style line endings
+            ?.replace(/\r/g, "\n") // Normalize old Mac-style line endings
+            ?.split("\n") // Split into paragraphs
             .map((paragraph, index) => (
               <p key={index} className="mb-4">
-                {paragraph.trim()} 
+                {paragraph.trim()}
               </p>
             ))}
         </div>
@@ -123,5 +147,3 @@ const BookViewer = () => {
     </div>
   );
 };
-
-export default BookViewer;
