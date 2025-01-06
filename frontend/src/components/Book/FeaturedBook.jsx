@@ -5,10 +5,12 @@ import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import Skeleton from "react-loading-skeleton";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/autoplay";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const FeaturedBook = ({ isHome }) => {
   const [books, setBooks] = useState([]);
@@ -31,10 +33,7 @@ const FeaturedBook = ({ isHome }) => {
     fetchBooks();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-
-  const FeaturedBooks = books;
+  const skeletonCount = isHome ? 5 : 6;
 
   return (
     <section className="px-4 py-10 h-[100vh]">
@@ -49,28 +48,102 @@ const FeaturedBook = ({ isHome }) => {
           </Link>
         </div>
 
-        {isHome ? (
+        {loading ? (
+          isHome ? (
+            <Swiper
+              spaceBetween={14}
+              slidesPerView={1}
+              loop={true}
+              navigation
+              modules={[Navigation, Pagination]}
+              autoplay
+              speed={800}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024: { slidesPerView: 5 },
+              }}
+              className="w-full"
+              style={{
+                "--swiper-navigation-color": "#ff5733",
+              }}
+            >
+              {Array.from({ length: skeletonCount }).map((_, index) => (
+                <SwiperSlide key={index}>
+                  <div className="p-4 bg-gray-800 rounded-md">
+                    <Skeleton
+                      height={200}
+                      baseColor="#2d3748"
+                      highlightColor="#4a5568"
+                    />
+                    <Skeleton
+                      height={24}
+                      className="mt-4"
+                      baseColor="#2d3748"
+                      highlightColor="#4a5568"
+                    />
+                    <Skeleton
+                      height={16}
+                      width="80%"
+                      className="mt-2"
+                      baseColor="#2d3748"
+                      highlightColor="#4a5568"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Array.from({ length: skeletonCount }).map((_, index) => (
+                <div
+                  key={index}
+                  className="p-4 bg-[#110726] rounded-md animate-pulse"
+                >
+                  <Skeleton
+                    height={200}
+                    baseColor="#2d3748" // Darker base color
+                    highlightColor="#4a5568" // Lighter highlight color
+                  />
+                  <Skeleton
+                    height={24}
+                    className="mt-4"
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                  <Skeleton
+                    height={16}
+                    width="80%"
+                    className="mt-2"
+                    baseColor="#2d3748"
+                    highlightColor="#4a5568"
+                  />
+                </div>
+              ))}
+            </div>
+          )
+        ) : error ? (
+          <p>{error}</p>
+        ) : isHome ? (
           <Swiper
             spaceBetween={14}
             slidesPerView={1}
             loop={true}
             navigation
-            // pagination={{ clickable: true }}
             modules={[Navigation, Pagination]}
             autoplay
             speed={800}
-            // autoplayDisableOnInteraction= {false}
             breakpoints={{
               640: { slidesPerView: 2 },
               768: { slidesPerView: 3 },
-              1024: { slidesPerView: 5 },
+              1024: { slidesPerView: 6 },
             }}
             className="w-full"
             style={{
               "--swiper-navigation-color": "#ff5733",
             }}
           >
-            {FeaturedBooks.map((novel) => (
+            {books.map((novel) => (
               <SwiperSlide key={novel.$id}>
                 <BookListing novel={novel} />
               </SwiperSlide>
@@ -78,7 +151,7 @@ const FeaturedBook = ({ isHome }) => {
           </Swiper>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {FeaturedBooks.map((novel) => (
+            {books.map((novel) => (
               <BookListing novel={novel} key={novel.$id} />
             ))}
           </div>

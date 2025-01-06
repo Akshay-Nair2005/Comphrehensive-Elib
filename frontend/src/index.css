@@ -48,6 +48,9 @@ body {
 .bg-button:hover {
   background-color: #f77f64;
 }
+.border-card {
+  border: 1px solid#f87871;
+}
 .text-color {
   color: #f87871;
 }
