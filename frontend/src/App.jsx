@@ -1,15 +1,15 @@
-// App.js
 import React from "react";
 import { RouterProvider } from "react-router-dom";
-import ScrollToTop from "../src/components/ScrollToTop"; // Import the ScrollToTop component
-import { routes } from "./Routes"; // Import the routes from routes.js
+import { routes } from "./Routes"; // Import the routes
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 function App() {
   return (
-    <RouterProvider router={routes}>
-      {/* ScrollToTop should be inside the RouterProvider to ensure it can react to route changes */}
-      <ScrollToTop />
-    </RouterProvider>
+    // The RouterProvider will handle routing
+    <Provider store={store}>
+      <RouterProvider router={routes} />
+    </Provider>
   );
 }
 

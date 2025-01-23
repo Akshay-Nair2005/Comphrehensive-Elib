@@ -6,5 +6,6 @@ const router = Router();
 router.get("/", getAllHostedBooks);
 router.get("/:id", getHostedBookById);
 router.post("/", createHostedBook);
+// router.put("/:id", createHostedBook);
 
 export default router;

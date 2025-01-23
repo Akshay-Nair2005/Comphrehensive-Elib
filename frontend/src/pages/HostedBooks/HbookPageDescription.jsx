@@ -104,6 +104,9 @@ export const HbookPageDescription = () => {
             <Link to={`/text/${hbook.$id}`} className="btn rounded-full">
               Read
             </Link>
+            <Link to={`/edit/${hbook.$id}`} className="btn rounded-full">
+              Edit
+            </Link>
             <button className="btn rounded-full">Save</button>
             <button className="btn rounded-full">Audio Book</button>
           </div>

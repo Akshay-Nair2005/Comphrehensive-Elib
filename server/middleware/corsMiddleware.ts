@@ -7,5 +7,5 @@ export const applyMiddlewares = (app: express.Application): void => {
     app.use(express.json());
     const bodyParser = require("body-parser")
     app.use(bodyParser.json())
-    
+
 };

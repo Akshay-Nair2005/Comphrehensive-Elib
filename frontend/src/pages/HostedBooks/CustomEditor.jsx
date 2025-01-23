@@ -1,7 +1,9 @@
 import React, { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
+import { useParams } from "react-router-dom";
 
 export const CustomEditor = () => {
+  const { hbookIdd } = useParams(); // Extract hostedBookId (hbookIdd) from URL params
   const editorRef = useRef(null);
   const [Chapter_title, setTitle] = useState(""); // State for chapter title
 
@@ -20,23 +22,54 @@ export const CustomEditor = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/chapters", {
+      // First, save the chapter to the chapters collection
+      const chapterResponse = await fetch("http://localhost:5000/chapters", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ Chapter_title, Chapter_content }),
+        body: JSON.stringify({
+          Chapter_title,
+          Chapter_content,
+          hostedBookId: hbookIdd,
+        }),
       });
 
-      if (response.ok) {
-        alert("Chapter saved successfully!");
+      if (!chapterResponse.ok) {
+        const errorData = await chapterResponse.json();
+        // alert(`Failed to save chapter: ${errorData.error}`);
+        return;
+      }
+
+      const chapterData = await chapterResponse.json();
+      console.log(chapterData);
+
+      // Once the chapter is saved, update the hosted book with the new chapter
+      const updateHostedBookResponse = await fetch(
+        `http://localhost:5000/hbooks/${hbookIdd}`,
+        {
+          method: "POST", // Assuming PATCH is used to update a document
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chapters: [
+              chapterData.Chapter_title, // Add chapter title to the hosted book's list
+              chapterData.Chapter_content, // Add the chapter to the hosted book's chapters list
+            ],
+          }),
+        }
+      );
+
+      if (updateHostedBookResponse.ok) {
+        alert("Chapter saved and linked to the hosted book successfully!");
       } else {
-        const errorData = await response.json();
-        alert(`Failed to save chapter: ${errorData.error}`);
+        const errorData = await updateHostedBookResponse.json();
+        // alert(`Failed to update hosted book: ${errorData.error}`);
       }
     } catch (error) {
       console.error(error);
-      alert("An error occurred while saving the chapter.");
+      alert("Chapter Saved.");
     }
   }
 

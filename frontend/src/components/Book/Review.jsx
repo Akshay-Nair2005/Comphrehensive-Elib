@@ -1,32 +1,16 @@
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addReview,
+  toggleLike,
+  toggleDislike,
+  toggleCommentBox,
+  addComment,
+} from "../../redux/features/reviewSlice";
 
 const Review = () => {
-  const [reviews, setReviews] = useState([
-    {
-      title: "Amazing Book",
-      author: "WanderlustExplorer",
-      content:
-        "Its a Amazing book. I love it. I have read it 3 times and still I am not bored of it. I would recommend it to everyone.",
-      likes: 0,
-      dislikes: 0,
-      likeActive: false,
-      dislikeActive: false,
-      comments: [],
-      showCommentBox: false,
-    },
-    {
-      title: "Just Fabulous !!!",
-      author: "CultureVulture",
-      content:
-        "This book is just fabulous! The storytelling is captivating and the characters are well-developed. I couldn't put it down and finished it in one sitting. Highly recommended!",
-      likes: 0,
-      dislikes: 0,
-      likeActive: false,
-      dislikeActive: false,
-      comments: [],
-      showCommentBox: false,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const reviews = useSelector((state) => state.reviews.reviews);
 
   const [newReview, setNewReview] = useState({
     title: "",
@@ -41,125 +25,70 @@ const Review = () => {
       alert("Please fill in all fields.");
       return;
     }
-    setReviews([
-      ...reviews,
-      {
-        ...newReview,
-        likes: 0,
-        dislikes: 0,
-        likeActive: false,
-        dislikeActive: false,
-        comments: [],
-        showCommentBox: false,
-      },
-    ]);
+    dispatch(addReview(newReview));
     setNewReview({ title: "", author: "", content: "" });
   };
 
-  const toggleLike = (index) => {
-    const updatedReviews = [...reviews];
-    const review = updatedReviews[index];
-    if (!review.likeActive) {
-      review.likes++;
-      review.likeActive = true;
-      if (review.dislikeActive) {
-        review.dislikes--;
-        review.dislikeActive = false;
-      }
-    } else {
-      review.likes--;
-      review.likeActive = false;
-    }
-    setReviews(updatedReviews);
-  };
-
-  const toggleDislike = (index) => {
-    const updatedReviews = [...reviews];
-    const review = updatedReviews[index];
-    if (!review.dislikeActive) {
-      review.dislikes++;
-      review.dislikeActive = true;
-      if (review.likeActive) {
-        review.likes--;
-        review.likeActive = false;
-      }
-    } else {
-      review.dislikes--;
-      review.dislikeActive = false;
-    }
-    setReviews(updatedReviews);
-  };
-
-  const toggleCommentBox = (index) => {
-    const updatedReviews = [...reviews];
-    updatedReviews[index].showCommentBox =
-      !updatedReviews[index].showCommentBox;
-    setReviews(updatedReviews);
-  };
-
-  const addComment = (index) => {
+  const handleAddComment = (index) => {
     if (!newComments[index] || newComments[index].trim() === "") {
       alert("Please enter a valid comment.");
       return;
     }
-    const updatedReviews = [...reviews];
-    updatedReviews[index].comments.push(newComments[index]);
-    updatedReviews[index].showCommentBox = false;
+    dispatch(addComment({ index, comment: newComments[index] }));
     setNewComments((prev) => {
       const newState = [...prev];
       newState[index] = "";
       return newState;
     });
-    setReviews(updatedReviews);
   };
 
   return (
     <div className="min-h-screen mt-4 w-full">
       <h1 className="text-3xl text-button text-center font-bold">Reviews</h1>
-      <div className=" mt-4 flex flex-wrap w-full justify-evenly">
-        {/* Add Review Section */}
-        <div className="w-[40%] mt-4  p-4">
+      <div className="mt-4 flex flex-wrap w-full justify-evenly">
+        <div className="w-[40%] mt-4 p-4">
           <h2 className="text-xl font-bold text-button">Add Your Review</h2>
           <form className="flex flex-col mt-4" onSubmit={submitReview}>
-            <label htmlFor="reviewTitle" className="text-button mb-1">
-              Title:
-            </label>
+            {/* Title Input */}
+            <label className="mb-2 font-semibold text-button">Title</label>
             <input
               type="text"
-              id="reviewTitle"
               value={newReview.title}
               onChange={(e) =>
                 setNewReview({ ...newReview, title: e.target.value })
               }
-              className="p-2 bg-white/90 rounded-md text-button mb-3"
+              placeholder="Enter review title"
+              className="mb-4 p-2 border rounded-md"
               required
             />
-            <label htmlFor="reviewAuthor" className="text-button mb-1">
-              Your Name:
-            </label>
+
+            {/* Author Input */}
+            <label className="mb-2 font-semibold text-button">Author</label>
             <input
               type="text"
-              id="reviewAuthor"
               value={newReview.author}
               onChange={(e) =>
                 setNewReview({ ...newReview, author: e.target.value })
               }
-              className="p-2 bg-white/90 rounded-lg text-button mb-3"
+              placeholder="Enter your name"
+              className="mb-4 p-2 border rounded-md"
               required
             />
-            <label htmlFor="reviewContent" className="text-button mb-1">
-              Review:
-            </label>
+
+            {/* Content Input */}
+            <label className="mb-2 font-semibold text-button">Content</label>
             <textarea
-              id="reviewContent"
               value={newReview.content}
               onChange={(e) =>
                 setNewReview({ ...newReview, content: e.target.value })
               }
-              className="p-2 bg-white/90 rounded-lg text-black mb-3"
+              placeholder="Write your review"
+              className="mb-4 p-2 border rounded-md"
               rows="4"
               required
             ></textarea>
+
+            {/* Submit Button */}
             <button
               type="submit"
               className="px-4 py-2 bg-button text-button rounded-md"
@@ -169,7 +98,6 @@ const Review = () => {
           </form>
         </div>
 
-        {/* Review List Section */}
         <div className="w-1/2 review-container overflow-y-auto h-[calc(100vh-100px)] mt-4 space-y-6 border-l border-l-[#F87871]">
           {reviews.map((review, index) => (
             <div
@@ -183,36 +111,33 @@ const Review = () => {
               <p className="mt-2">{review.content}</p>
               <div className="mt-4">
                 <button
-                  className={`mr-2 px-3 py-2 rounded-lg text-button  ${
-                    review.likeActive
-                      ? "bg-button"
-                      : "border border-card text-button"
+                  onClick={() => dispatch(toggleLike(index))}
+                  className={`mr-2 px-3 py-2 rounded-lg ${
+                    review.likeActive ? "bg-button" : "border"
                   }`}
-                  onClick={() => toggleLike(index)}
                 >
                   👍🏻 {review.likes}
                 </button>
                 <button
-                  className={`mr-2 px-3 py-2 rounded-lg  text-button ${
-                    review.dislikeActive
-                      ? "bg-button"
-                      : "border border-card text-button"
+                  onClick={() => dispatch(toggleDislike(index))}
+                  className={`mr-2 px-3 py-2 rounded-lg ${
+                    review.dislikeActive ? "bg-button" : "border"
                   }`}
-                  onClick={() => toggleDislike(index)}
                 >
                   👎🏻 {review.dislikes}
                 </button>
                 <button
-                  className="ml-2 px-3 py-2 rounded-lg border border-card text-button"
-                  onClick={() => toggleCommentBox(index)}
+                  onClick={() => dispatch(toggleCommentBox(index))}
+                  className="ml-2 px-3 py-2 rounded-lg border"
                 >
                   💬
                 </button>
                 {review.showCommentBox && (
-                  <div className="mt-4 w-[85%] rounded-md">
+                  <div className="mt-4">
                     <input
                       type="text"
                       value={newComments[index] || ""}
+                      className="p-2 rounded-md w-full bg-gray-800 border-b-2 border-b-orange-500 focus:outline-none focus:ring-0"
                       onChange={(e) =>
                         setNewComments((prev) => {
                           const newState = [...prev];
@@ -220,25 +145,18 @@ const Review = () => {
                           return newState;
                         })
                       }
-                      className="w-full bg-[#383838] border-b border-b-[#F87871]  p-2 text-button placeholder-gray-500"
-                      placeholder="Write a comment..."
                     />
                     <button
-                      onClick={() => addComment(index)}
-                      className="mt-3 px-4 py-1 bg-button text-button rounded-md "
+                      onClick={() => handleAddComment(index)}
+                      className=" bg-orange-500 p-2 mt-3 rounded-lg"
                     >
                       Add Comment
                     </button>
                   </div>
                 )}
-                <ul className="mt-2 space-y-2">
+                <ul className="mt-3">
                   {review.comments.map((comment, idx) => (
-                    <li
-                      key={idx}
-                      className="border-b border-white/80 pb-1 text-button"
-                    >
-                      {comment}
-                    </li>
+                    <li key={idx}>{comment}</li>
                   ))}
                 </ul>
               </div>

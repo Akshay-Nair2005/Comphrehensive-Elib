@@ -106,7 +106,9 @@ export const PageDescription = () => {
               Read
             </Link>
             <button className="btn rounded-full">Save</button>
-            <button className="btn rounded-full">Audio Book</button>
+            <Link to="/read" className="btn rounded-full">
+              Audio Book
+            </Link>
           </div>
         </div>
       </div>

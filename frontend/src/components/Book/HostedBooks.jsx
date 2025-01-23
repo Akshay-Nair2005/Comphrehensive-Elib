@@ -1,28 +1,37 @@
 import React, { useEffect, useState } from "react";
-import novel from "../../novels.json";
 import Hbooklisting from "./Hbooklisting.jsx";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import {
-  FaArrowRight,
-  FaArrowLeft,
-  FaArrowUp,
-  FaArrowDown,
-} from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const HostedBooks = ({ isHome = false }) => {
   const [hbooks, setBooks] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Predefined list of genres
+  const genres = [
+    "All",
+    "Anime",
+    "Non-Fiction",
+    "Fantasy",
+    "Sci-Fi",
+    "Thriller",
+    "Mystery",
+    "Romance",
+  ];
+
   useEffect(() => {
-    // Fetch books from the API
     const fetchBooks = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/hbooks"); // Adjust the endpoint to your API
+        const response = await axios.get("http://localhost:5000/hbooks");
         setBooks(response.data);
+        setFilteredBooks(response.data);
       } catch (err) {
         console.error(err);
         setError("Failed to fetch books.");
@@ -34,25 +43,72 @@ const HostedBooks = ({ isHome = false }) => {
     fetchBooks();
   }, []);
 
-  const skeletons = Array.from({ length: isHome ? 3 : 6 }); // Adjust skeleton count
+  // Handle filtering by search and genre
+  useEffect(() => {
+    let filtered = hbooks;
 
-  const hostedbook = isHome ? hbooks.slice(0, 3) : hbooks;
+    if (searchQuery) {
+      filtered = filtered.filter((book) =>
+        book.hbook_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (selectedGenre !== "All") {
+      filtered = filtered.filter((book) => {
+        // Check if the book's genres (comma-separated) include the selected genre
+        const bookGenres = book.hbook_genre.split(",").map((g) => g.trim());
+        return bookGenres.includes(selectedGenre);
+      });
+    }
+
+    setFilteredBooks(filtered);
+  }, [searchQuery, selectedGenre, hbooks]);
+
+  const skeletons = Array.from({ length: isHome ? 3 : 6 });
+  const hostedbook = isHome ? filteredBooks.slice(0, 3) : filteredBooks;
 
   return (
     <section className="px-4 py-10 h-[100vh]">
       <div className="container-xl lg:container m-auto">
-        <div className="flex justify-between px-6">
+        <div className="flex justify-between px-6 items-center">
           <h2 className="text-3xl font-bold text-[#E0E0E0] mb-6">
             {isHome ? "Hosted Books" : "All Hosted Books"}
           </h2>
-          <div className="flex">
-            <Link to="/hnovels" className="text-white text-lg">
-              <span>
-                <FaArrowRight color="white" />{" "}
-              </span>
+          {isHome && (
+            <Link
+              to="/hnovels"
+              className="text-white text-lg flex items-center"
+            >
+              <span className="mr-2">See All</span>
+              <FaArrowRight color="white" />
             </Link>
-          </div>
+          )}
         </div>
+
+        {/* Filters */}
+        {!isHome && (
+          <div className="flex justify-between px-6 mb-6">
+            <input
+              type="text"
+              placeholder="Search by name"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="p-2 rounded-md bg-gray-800 text-white w-1/3"
+            />
+            <select
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+              className="p-2 rounded-md bg-gray-800 text-white w-1/4"
+            >
+              {genres.map((genre) => (
+                <option key={genre} value={genre}>
+                  {genre}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {loading
             ? skeletons.map((_, index) => (
