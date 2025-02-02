@@ -2,22 +2,22 @@ import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 
 const pictures = [
-  "DSC00680",
-  "DSC00933",
-  "DSC00966",
-  "DSC00983",
-  "DSC01011",
-  "DSC01040",
-  "DSC01064",
-  "DSC01071",
-  "DSC01103",
-  "DSC01145",
-  "DSC01420",
-  "DSC01461",
-  "DSC01489",
-  "DSC02031",
-  "DSC02064",
-  "DSC02069",
+  "pic1",
+  "pic2",
+  "pic3",
+  "pic4",
+  "pic5",
+  "pic6",
+  "pic6",
+  "pic6",
+  "pic6",
+  "pic6",
+  "pic11",
+  "pic12",
+  "pic13",
+  "pic14",
+  "pic15",
+  "pic16",
 ];
 
 export const pageAtom = atom(0);
@@ -44,17 +44,9 @@ pages.push({
 export const UI = () => {
   const [page, setPage] = useAtom(pageAtom);
 
-
   return (
     <>
       <main className="h-screen pointer-events-none select-none z-10 absolute w-full inset-0 flex flex-col justify-between">
-        {/* Logo */}
-        <div className="flex justify-between p-4">
-          <a className="pointer-events-auto" href="/">
-            <img className="w-40 " src="/images/novelsync2.png" alt="Logo" />
-          </a>
-        </div>
-
         {/* Page Navigation */}
         {/* <div className="w-full flex justify-center items-center overflow-auto pointer-events-auto p-10">
           <div className="flex items-center gap-4 flex-wrap justify-center max-w-full ml-20">

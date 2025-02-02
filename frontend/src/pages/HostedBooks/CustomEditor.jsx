@@ -1,5 +1,12 @@
 import React, { useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
+("use client");
+
+import {
+  LiveblocksProvider,
+  RoomProvider,
+  ClientSideSuspense,
+} from "@liveblocks/react/suspense";
 import { useParams } from "react-router-dom";
 
 export const CustomEditor = () => {
@@ -102,17 +109,27 @@ export const CustomEditor = () => {
       {/* Editor Section */}
       <div className="flex-grow p-6">
         <div className="h-full rounded-lg shadow-lg bg-gray-900 border border-gray-700">
-          <Editor
-            height="100%"
-            defaultLanguage="plaintext"
-            defaultValue=""
-            onMount={handleEditorDidMount}
-            options={{
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-            }}
-            theme="vs-dark"
-          />
+          <LiveblocksProvider
+            publicApiKey={
+              "pk_dev_Qz2atFlSFAL8PXJQv3V0EwsIrkZ3vmV1uwnDpR3fzPt2_0sVKO8Kt-e2Wric2PcO"
+            }
+          >
+            <RoomProvider id="my-room">
+              <ClientSideSuspense fallback={<div>Loading…</div>}>
+                <Editor
+                  height="100%"
+                  defaultLanguage="plaintext"
+                  defaultValue=""
+                  onMount={handleEditorDidMount}
+                  options={{
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                  }}
+                  // theme="vs-dark"
+                />
+              </ClientSideSuspense>
+            </RoomProvider>
+          </LiveblocksProvider>
         </div>
       </div>
     </div>

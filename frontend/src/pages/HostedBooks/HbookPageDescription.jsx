@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import "../../assets/css/page.css";
 import { Link } from "react-router-dom";
 import Review from "../../components/Book/Review";
 
@@ -37,9 +38,9 @@ export const HbookPageDescription = () => {
     return (
       <div className="flex flex-col items-center justify-center h-screen ">
         {/* Loader Animation */}
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E94F2C]"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#5E3023]"></div>
         {/* Loader Text */}
-        <p className="mt-4 text-lg font-medium text-white">
+        <p className="mt-4 text-lg font-medium text-black">
           Loading your book...
         </p>
       </div>
@@ -47,11 +48,11 @@ export const HbookPageDescription = () => {
   }
 
   if (error) {
-    return <div className="text-center text-white py-20">{error}</div>;
+    return <div className="text-center text-black py-20">{error}</div>;
   }
 
   if (!hbook) {
-    return <div className="text-center text-white py-20">Book not found</div>;
+    return <div className="text-center text-black py-20">Book not found</div>;
   }
 
   const renderDescription = (text, limit, isExpanded, toggleExpand) => {
@@ -61,7 +62,7 @@ export const HbookPageDescription = () => {
     return (
       <p>
         {isExpanded ? text : `${text.substring(0, limit)}...`}
-        <button onClick={toggleExpand} className="text-white ml-2 underline">
+        <button onClick={toggleExpand} className="text-black ml-2 underline">
           {isExpanded ? "Show Less" : "Read More"}
         </button>
       </p>
@@ -81,10 +82,8 @@ export const HbookPageDescription = () => {
         </div>
 
         {/* Book Information Section */}
-        <div className="w-full lg:w-2/3 text-[#FFf] space-y-6">
-          <h1 className="text-4xl font-bold text-[#F87871]">
-            {hbook.hbook_name}
-          </h1>
+        <div className="w-full lg:w-2/3 text-black space-y-6">
+          <h1 className="text-4xl font-bold text-color">{hbook.hbook_name}</h1>
           {renderDescription(
             hbook.hbook_desc,
             NOVEL_DESC_LIMIT,
@@ -101,14 +100,20 @@ export const HbookPageDescription = () => {
 
           {/* Action Buttons */}
           <div className="flex space-x-4 mt-6">
-            <Link to={`/text/${hbook.$id}`} className="btn rounded-full">
+            <Link
+              to={`/text/${hbook.$id}`}
+              className="btn rounded-full bg-beige"
+            >
               Read
             </Link>
-            <Link to={`/edit/${hbook.$id}`} className="btn rounded-full">
+            <Link
+              to={`/edit/${hbook.$id}`}
+              className="btn rounded-full bg-beige"
+            >
               Edit
             </Link>
-            <button className="btn rounded-full">Save</button>
-            <button className="btn rounded-full">Audio Book</button>
+            <button className="btn rounded-full bg-beige">Save</button>
+            <button className="btn rounded-full bg-beige">Audio Book</button>
           </div>
         </div>
       </div>

@@ -14,7 +14,7 @@ export const TextViewer = () => {
   const [chapters, setChapters] = useState([]);
   const [currentChapter, setCurrentChapter] = useState(null);
   const [fontSize, setFontSize] = useState(16);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false); // Default to light mode
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -52,28 +52,32 @@ export const TextViewer = () => {
 
   if (loading) {
     return (
-      <div className="text-center p-6 text-white">Loading chapters...</div>
+      <div className="text-center p-6 text-black">Loading chapters...</div>
     );
   }
 
   if (!chapters.length) {
     return (
-      <div className="text-center p-6 text-white ">No chapters available.</div>
+      <div className="text-center p-6 text-black">No chapters available.</div>
     );
   }
 
   return (
     <div
       className={`flex flex-col min-h-screen ${
-        darkMode ? "bg-[#021331] text-white" : "bg-white text-black"
+        darkMode ? "bg-black text-beige" : "bg-[#FFF6EF] text-black"
       }`}
     >
       {/* Top Bar */}
-      <div className="flex items-center h-16 justify-between px-4 py-2 border-b border-gray-700">
+      <div className="flex items-center h-16 justify-between px-4 py-2 border-b border-gray-300 dark:border-gray-700">
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleSidebar}
-            className="px-3 py-2 bg-button text-white rounded focus:outline-none"
+            className={`px-3 py-2 ${
+              darkMode
+                ? "bg-beige hover:bg-[#E7D8CB] text-black"
+                : "bg-[#5E3023] hover:bg-[#8A573A] text-white"
+            } rounded focus:outline-none`}
           >
             {isSidebarOpen ? <FaTimes /> : <FaBars />}
           </button>
@@ -82,19 +86,31 @@ export const TextViewer = () => {
         <div className="flex items-center space-x-4">
           <button
             onClick={handleZoomIn}
-            className="px-3 py-1 bg-button text-white rounded"
+            className={`px-3 py-1 ${
+              darkMode
+                ? "bg-beige hover:bg-[#E7D8CB] text-black"
+                : "bg-[#5E3023] hover:bg-[#8A573A] text-white"
+            } rounded`}
           >
             <FaPlus />
           </button>
           <button
             onClick={handleZoomOut}
-            className="px-3 py-1 bg-button text-white rounded"
+            className={`px-3 py-1 ${
+              darkMode
+                ? "bg-beige hover:bg-[#E7D8CB] text-black"
+                : "bg-[#5E3023] hover:bg-[#8A573A] text-white"
+            } rounded`}
           >
             <FaMinus />
           </button>
           <button
             onClick={toggleDarkMode}
-            className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+            className={`px-3 py-1 ${
+              darkMode
+                ? "bg-beige hover:bg-[#E7D8CB] text-black"
+                : "bg-[#5E3023] hover:bg-[#8A573A] text-white"
+            } rounded`}
           >
             {darkMode ? <FaSun /> : <FaMoon />}
           </button>
@@ -118,8 +134,12 @@ export const TextViewer = () => {
                   className={`cursor-pointer p-2 rounded ${
                     currentChapter &&
                     currentChapter.Chapter_title === chapter.Chapter_title
-                      ? "bg-button text-white"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                      ? darkMode
+                        ? "bg-[#E1CDBB] text-black "
+                        : "bg-[#5E3023] text-white"
+                      : darkMode
+                      ? "hover:bg-[#E7D8CB] text-beige hover:text-black"
+                      : "hover:bg-[#8A573A] text-black hover:text-white"
                   }`}
                 >
                   {chapter.Chapter_title}

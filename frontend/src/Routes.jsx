@@ -1,4 +1,3 @@
-// routes.js
 import {
   NotFoundPage,
   HomePage,
@@ -11,7 +10,6 @@ import {
 } from "./pages";
 import MainLayout from "./layouts/MainLayout";
 import HostedBooks from "./components/Book/HostedBooks";
-
 import { createBrowserRouter } from "react-router-dom";
 import { NewDashboard } from "./pages/trial/NewDashboard";
 import HostedBookInfo from "./pages/HostedBooks/HostedBookInfo";
@@ -19,18 +17,25 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import PdfReader from "./pages/CustomBooks/Pdfreader";
 import UserProfile from "./pages/User/UserProfile";
+import HomeLayout from "./layouts/HomeLayout"; // Import a separate layout for the homepage
+import AboutUs from "./pages/AboutUs";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: <HomeLayout />, // Use HomeLayout for the homepage
+    children: [{ path: "/", element: <HomePage /> }],
+  },
+  {
+    path: "/",
+    element: <MainLayout />, // Use MainLayout for other routes with navigation
     children: [
-      { path: "/", element: <HomePage /> },
       { path: "/read", element: <PdfReader /> },
       { path: "/desc/:bookId", element: <PageDescription /> },
       { path: "/hdesc/:hbookId", element: <HbookPageDescription /> },
       { path: "/info", element: <HostedBookInfo /> },
       { path: "/user", element: <UserProfile /> },
+      { path: "/about", element: <AboutUs /> },
     ],
   },
   { path: "/login", element: <Login /> },

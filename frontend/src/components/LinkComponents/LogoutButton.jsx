@@ -1,5 +1,5 @@
 import React from "react";
-import { account } from "../appwritee/appwrite";
+import { account } from "../../appwritee/appwrite";
 
 const LogoutButton = () => {
   const handleLogout = async () => {

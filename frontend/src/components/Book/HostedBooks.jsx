@@ -71,16 +71,16 @@ const HostedBooks = ({ isHome = false }) => {
     <section className="px-4 py-10 h-[100vh]">
       <div className="container-xl lg:container m-auto">
         <div className="flex justify-between px-6 items-center">
-          <h2 className="text-3xl font-bold text-[#E0E0E0] mb-6">
+          <h2 className="text-3xl font-bold text-color mb-6">
             {isHome ? "Hosted Books" : "All Hosted Books"}
           </h2>
           {isHome && (
             <Link
               to="/hnovels"
-              className="text-white text-lg flex items-center"
+              className="text-[#5E3023] text-lg flex items-center"
             >
               <span className="mr-2">See All</span>
-              <FaArrowRight color="white" />
+              <FaArrowRight color="brown" />
             </Link>
           )}
         </div>
@@ -93,12 +93,12 @@ const HostedBooks = ({ isHome = false }) => {
               placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 rounded-md bg-gray-800 text-white w-1/3"
+              className="p-2 rounded-md bg-[#5E3023] text-white placeholder-slate-100 w-1/3"
             />
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
-              className="p-2 rounded-md bg-gray-800 text-white w-1/4"
+              className="p-2 rounded-md bg-[#5E3023] text-white w-1/4"
             >
               {genres.map((genre) => (
                 <option key={genre} value={genre}>
@@ -115,21 +115,21 @@ const HostedBooks = ({ isHome = false }) => {
                 <div key={index} className="p-4 bg-gray-800 rounded-md">
                   <Skeleton
                     height={200}
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
+                    baseColor="#E1CDBB"
+                    highlightColor="#5E3023"
                   />
                   <Skeleton
                     height={24}
                     className="mt-4"
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
+                    baseColor="#E1CDBB"
+                    highlightColor="#5E3023"
                   />
                   <Skeleton
                     height={16}
                     width="80%"
                     className="mt-2"
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
+                    baseColor="#E1CDBB"
+                    highlightColor="#5E3023"
                   />
                 </div>
               ))

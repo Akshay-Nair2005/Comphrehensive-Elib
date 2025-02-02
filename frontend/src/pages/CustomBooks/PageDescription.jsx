@@ -38,9 +38,9 @@ export const PageDescription = () => {
     return (
       <div className="flex flex-col items-center justify-center h-screen ">
         {/* Loader Animation */}
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#E94F2C]"></div>
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#5E3023]"></div>
         {/* Loader Text */}
-        <p className="mt-4 text-lg font-medium text-white">
+        <p className="mt-4 text-lg font-medium text-color">
           Loading your book...
         </p>
       </div>
@@ -48,11 +48,11 @@ export const PageDescription = () => {
   }
 
   if (error) {
-    return <div className="text-center text-white py-20">{error}</div>;
+    return <div className="text-center text-color py-20">{error}</div>;
   }
 
   if (!book) {
-    return <div className="text-center text-white py-20">Book not found</div>;
+    return <div className="text-center text-color py-20">Book not found</div>;
   }
 
   const renderDescription = (text, limit, isExpanded, toggleExpand) => {
@@ -62,7 +62,7 @@ export const PageDescription = () => {
     return (
       <p>
         {isExpanded ? text : `${text.substring(0, limit)}...`}
-        <button onClick={toggleExpand} className="text-white ml-2 underline">
+        <button onClick={toggleExpand} className="text-color ml-2 underline">
           {isExpanded ? "Show Less" : "Read More"}
         </button>
       </p>
@@ -82,10 +82,8 @@ export const PageDescription = () => {
         </div>
 
         {/* Book Information Section */}
-        <div className="w-full lg:w-2/3 text-[#FFf] space-y-6">
-          <h1 className="text-4xl font-bold text-[#F87871]">
-            {book.Novel_Name}
-          </h1>
+        <div className="w-full lg:w-2/3 text-black space-y-6">
+          <h1 className="text-4xl font-bold text-color">{book.Novel_Name}</h1>
           {renderDescription(
             book.Novel_desc,
             NOVEL_DESC_LIMIT,

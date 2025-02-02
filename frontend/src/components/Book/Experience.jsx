@@ -11,7 +11,7 @@ export const Experience = () => {
       >
         <Book />
       </Float>
-      {/* <OrbitControls enableZoom={false} /> */}
+      {/* <OrbitControls enableZoom={false} autoRotate={false} /> */}
       <Environment preset="studio"></Environment>
       <directionalLight
         position={[2, 5, 2]}

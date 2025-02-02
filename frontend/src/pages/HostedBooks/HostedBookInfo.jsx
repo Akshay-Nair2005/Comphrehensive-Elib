@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { FiUpload } from "react-icons/fi";
 import { storage } from "../../appwritee/appwrite"; // Import your Appwrite storage client
 import { ID } from "appwrite";
+import dotenv from "dotenv";
 
 const HostedBookInfo = () => {
   const [hbookName, setHbookName] = useState("");
@@ -13,6 +14,9 @@ const HostedBookInfo = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
+
+  const bucketid = import.meta.env.VITE_BUCKET_IMAGE_ID;
+  const projectid = import.meta.env.VITE_PROJECT_ID;
 
   // Upload the image to Appwrite and get the URL
   const uploadImage = async (file) => {
@@ -29,7 +33,7 @@ const HostedBookInfo = () => {
       );
 
       // Construct the URL for the uploaded file
-      const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/678df3f6000187260af8/files/${response.$id}/view?project=67458dd70030fdd03393&mode=admin`;
+      const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketid}/files/${response.$id}/view?project=${projectid}&mode=admin`;
 
       return fileUrl;
     } catch (error) {
@@ -103,11 +107,11 @@ const HostedBookInfo = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-6 bg-gray-900">
+    <div className="min-h-screen flex flex-col items-center p-6">
       <div className="flex items-start w-full max-w-5xl gap-6">
         <div
-          className={`w-64 h-80 bg-gray-600 ${
-            imagePreview ? "" : "animate-pulse"
+          className={`w-64 h-80 bg-hover ${
+            imagePreview ? "" : ""
           } rounded-lg relative`}
         >
           {imagePreview && (
@@ -118,12 +122,12 @@ const HostedBookInfo = () => {
             />
           )}
         </div>
-        <div className="flex-1 bg-gray-800 p-6 rounded-lg shadow-md">
+        <div className="flex-1 bg-hover p-6 rounded-lg shadow-md">
           <h1 className="text-2xl font-bold text-white mb-6">Story Details</h1>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-white">
                 Title
               </label>
               <input
@@ -131,12 +135,12 @@ const HostedBookInfo = () => {
                 placeholder="Untitled Story"
                 value={hbookName}
                 onChange={(e) => setHbookName(e.target.value)}
-                className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-white">
                 Choose Cover Image
               </label>
               <input
@@ -148,17 +152,17 @@ const HostedBookInfo = () => {
               />
               <div
                 onClick={triggerFileInput}
-                className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-lg flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg flex items-center justify-between cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
               >
                 <span>
                   {hbookNovelImg ? hbookNovelImg.name : "No file chosen"}
                 </span>
-                <FiUpload className="text-white text-xl" />
+                <FiUpload className="text-[#5E3023] text-xl" />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-white">
                 Description
               </label>
               <textarea
@@ -166,12 +170,12 @@ const HostedBookInfo = () => {
                 value={hbookDesc}
                 onChange={(e) => setHbookDesc(e.target.value)}
                 rows="4"
-                className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
               ></textarea>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-white">
                 Genre
               </label>
               <input
@@ -179,12 +183,12 @@ const HostedBookInfo = () => {
                 placeholder="Select a Category"
                 value={hbookGenre}
                 onChange={(e) => setHbookGenre(e.target.value)}
-                className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-white">
                 Author Name
               </label>
               <input
@@ -192,12 +196,12 @@ const HostedBookInfo = () => {
                 placeholder="Enter author name"
                 value={hbookAuthor}
                 onChange={(e) => setHbookAuthor(e.target.value)}
-                className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-white">
                 Author Description
               </label>
               <textarea
@@ -205,18 +209,18 @@ const HostedBookInfo = () => {
                 value={hbookAuthDesc}
                 onChange={(e) => setHbookAuthDesc(e.target.value)}
                 rows="4"
-                className="w-full mt-1 p-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
               ></textarea>
             </div>
           </div>
 
           <div className="flex justify-end mt-6 gap-4">
-            <button className="px-6 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-500 transition">
+            <button className="px-6 py-2 bg-beige text-black rounded-lg font-medium hover:bg-red-500 transition">
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="px-6 py-2 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition"
+              className="px-6 py-2 bg-button hover:bg-[#49251b] text-white rounded-lg font-medium  transition"
               disabled={loading}
             >
               {loading ? "Publishing..." : "Publish"}

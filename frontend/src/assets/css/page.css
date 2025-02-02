@@ -12,19 +12,59 @@ body {
   display: inline-block;
   padding: 10px 30px;
   font-size: 17px;
-  color: white;
-  background: linear-gradient(to right, #e94f2c 50%, #383838 50%);
+  color: black;
+  background: linear-gradient(to right, #5E3023 50%, #E1CDBB 50%);
   background-size: 200% 100%;
   background-position: right bottom;
-  border: white;
-
-  /* border-radius: 50%; */
+  border: 1px solid #5E3023;
   cursor: pointer;
   text-transform: uppercase;
-  transition: background-position 0.4s ease, color 0.4s ease;
+
+  /* Smooth transition for background and color */
+  transition: background-position 0.9s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              color 0.4s ease-in-out;
 }
 
 .btn:hover {
-  background-position: left bottom;
-  color: white;
+  background-position: left bottom; /* Shift the gradient smoothly */
+  color: white; /* Transition the text color */
 }
+
+
+.editor {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.tiptap {
+  padding: 2px 12px;
+  outline: none;
+  width: 100%;
+}
+
+/* For mobile */
+.floating-threads {
+  display: none;
+}
+
+/* For desktop */
+.anchored-threads {
+  display: block;
+  max-width: 300px;
+  width: 100%;
+  position: absolute;
+  right: 12px;
+}
+
+@media (max-width: 640px) {
+  .floating-threads {
+    display: block;
+  }
+
+  .anchored-threads {
+    display: none;
+  }
+}
+

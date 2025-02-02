@@ -10,8 +10,10 @@
 }
 
 body {
+  /* background: #110726; */
+  background: #FEFBF8 ;
+  /* background: #E1CDBB ; */
   overflow-x: hidden;
-  background: #110726;
   min-width: 100vw;
   margin: 0;
 }
@@ -43,6 +45,43 @@ body {
 }
 
 .bg-button {
+  background-color: #5E3023;
+}
+.bg-button:hover {
+  background-color: #8A573A;
+}
+.bg-beige {
+  background-color: #E1CDBB;
+}
+.bg-beige-hover {
+  background-color: #E1CDBB;
+}
+.bg-hover {
+  background-color: #8A573A;
+}
+.bg-brown {
+  background-color: #5E3023;
+}
+.border-card {
+  border: 3px solid#5E3023;
+}
+.border-small {
+  border: 1px solid#5E3023;
+}
+.text-color {
+  color: #5E3023;
+}
+.text-beige {
+  color: #E1CDBB;
+}
+.text-button {
+  color: #fff;
+}
+.bg-nav {
+  background: #5E3023;
+}
+
+/* .bg-button {
   background-color: #e94f2c;
 }
 .bg-button:hover {
@@ -56,4 +95,4 @@ body {
 }
 .text-button {
   color: #fff;
-}
+} */

@@ -44,13 +44,13 @@ const Review = () => {
 
   return (
     <div className="min-h-screen mt-4 w-full">
-      <h1 className="text-3xl text-button text-center font-bold">Reviews</h1>
+      <h1 className="text-3xl text-color text-center font-bold">Reviews</h1>
       <div className="mt-4 flex flex-wrap w-full justify-evenly">
         <div className="w-[40%] mt-4 p-4">
-          <h2 className="text-xl font-bold text-button">Add Your Review</h2>
+          <h2 className="text-xl font-bold text-color">Add Your Review</h2>
           <form className="flex flex-col mt-4" onSubmit={submitReview}>
             {/* Title Input */}
-            <label className="mb-2 font-semibold text-button">Title</label>
+            <label className="mb-2 font-semibold text-color">Title</label>
             <input
               type="text"
               value={newReview.title}
@@ -63,7 +63,7 @@ const Review = () => {
             />
 
             {/* Author Input */}
-            <label className="mb-2 font-semibold text-button">Author</label>
+            <label className="mb-2 font-semibold text-color">Author</label>
             <input
               type="text"
               value={newReview.author}
@@ -76,7 +76,7 @@ const Review = () => {
             />
 
             {/* Content Input */}
-            <label className="mb-2 font-semibold text-button">Content</label>
+            <label className="mb-2 font-semibold text-color">Content</label>
             <textarea
               value={newReview.content}
               onChange={(e) =>
@@ -91,20 +91,22 @@ const Review = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="px-4 py-2 bg-button text-button rounded-md"
+              className="px-4 py-2 bg-button text-color rounded-md"
             >
               Submit Review
             </button>
           </form>
         </div>
 
-        <div className="w-1/2 review-container overflow-y-auto h-[calc(100vh-100px)] mt-4 space-y-6 border-l border-l-[#F87871]">
+        <div className="w-1/2 review-container overflow-y-auto h-[calc(100vh-100px)] mt-4 space-y-6 border-l border-l-[#5E3023]">
           {reviews.map((review, index) => (
             <div
               key={index}
-              className="review text-button rounded-md p-4 shadow-md"
+              className="review text-black rounded-md p-4 shadow-md"
             >
-              <h2 className="text-xl font-semibold">{review.title}</h2>
+              <h2 className="text-xl text-black font-semibold">
+                {review.title}
+              </h2>
               <p className="mt-2">
                 <strong>Review by {review.author}</strong>
               </p>
@@ -113,7 +115,7 @@ const Review = () => {
                 <button
                   onClick={() => dispatch(toggleLike(index))}
                   className={`mr-2 px-3 py-2 rounded-lg ${
-                    review.likeActive ? "bg-button" : "border"
+                    review.likeActive ? "bg-button text-white" : "border-small "
                   }`}
                 >
                   👍🏻 {review.likes}
@@ -121,14 +123,16 @@ const Review = () => {
                 <button
                   onClick={() => dispatch(toggleDislike(index))}
                   className={`mr-2 px-3 py-2 rounded-lg ${
-                    review.dislikeActive ? "bg-button" : "border"
+                    review.dislikeActive
+                      ? "bg-button text-white"
+                      : "border-small"
                   }`}
                 >
                   👎🏻 {review.dislikes}
                 </button>
                 <button
                   onClick={() => dispatch(toggleCommentBox(index))}
-                  className="ml-2 px-3 py-2 rounded-lg border"
+                  className="ml-2 px-3 py-2 rounded-lg bg-hover bg-button"
                 >
                   💬
                 </button>
@@ -137,7 +141,7 @@ const Review = () => {
                     <input
                       type="text"
                       value={newComments[index] || ""}
-                      className="p-2 rounded-md w-full bg-gray-800 border-b-2 border-b-orange-500 focus:outline-none focus:ring-0"
+                      className="p-2 rounded-md w-full bg-[#E1CDBB] border-b-2 border-b-[#5E3023] focus:outline-none focus:ring-0"
                       onChange={(e) =>
                         setNewComments((prev) => {
                           const newState = [...prev];
@@ -148,7 +152,7 @@ const Review = () => {
                     />
                     <button
                       onClick={() => handleAddComment(index)}
-                      className=" bg-orange-500 p-2 mt-3 rounded-lg"
+                      className=" bg-[#5E3023] p-2 mt-3 rounded-lg text-white"
                     >
                       Add Comment
                     </button>
