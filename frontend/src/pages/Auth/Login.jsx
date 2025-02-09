@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { account } from "../../appwritee/appwrite";
 import { FaEnvelope, FaKey } from "react-icons/fa"; // Importing icons
 import { useNavigate } from "react-router-dom";
@@ -7,8 +7,20 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [focusedInput, setFocusedInput] = useState(""); // Tracks focused input
-
   const navigate = useNavigate();
+
+  // 🔹 Check if user is already logged in
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        await account.get();
+        navigate("/"); // Redirect to home if user exists
+      } catch (error) {
+        console.log("No active session found.");
+      }
+    };
+    checkUserSession();
+  }, [navigate]);
 
   const handleLogin = async () => {
     try {
@@ -31,7 +43,7 @@ const Login = () => {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex w-full max-w-5xl  bg-opacity-90 rounded-lg shadow-2xl border border-gray-300 p-6">
+      <div className="flex w-full max-w-5xl bg-opacity-90 rounded-lg shadow-2xl border border-gray-300 p-6">
         {/* Content Wrapper with Gap */}
         <div className="flex w-full gap-x-6 m-16">
           {/* Login Container */}

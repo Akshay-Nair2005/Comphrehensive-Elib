@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import "../../assets/css/page.css";
 import { Link } from "react-router-dom";
 import Review from "../../components/Book/Review";
+import { account } from "../../appwritee/appwrite"; // Ensure correct import
 
 export const HbookPageDescription = () => {
   const { hbookId } = useParams(); // Fetch the bookId from the URL params
@@ -33,6 +34,56 @@ export const HbookPageDescription = () => {
 
     fetchBookDetails();
   }, [hbookId]);
+
+  const saveBook = async () => {
+    try {
+      // 🔹 Get the user details from Appwrite
+      const userDetails = await account.get();
+      const userrId = userDetails.$id;
+
+      // 🔹 Fetch user details from backend
+      const userResponse = await fetch(
+        `http://localhost:5000/user/${userrId}/`
+      );
+
+      if (!userResponse.ok) {
+        throw new Error("User not found");
+      }
+
+      const userData = await userResponse.json();
+
+      // 🔹 Ensure `custombooks` exists
+      const updatedBooks = userData.hostedbooks || [];
+
+      // 🔹 Check if book already exists
+      if (updatedBooks.includes(hbookId)) {
+        alert("Book already saved!");
+        return;
+      }
+
+      updatedBooks.push(hbookId); // Append new book
+
+      const response = await fetch(
+        `http://localhost:5000/user/${userrId}/hostedbooks`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ hostedbooks: updatedBooks }), // ✅ Fix key name
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update the user’s saved books");
+      }
+
+      alert("Book saved successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while saving the book");
+    }
+  };
 
   if (loading) {
     return (
@@ -106,13 +157,9 @@ export const HbookPageDescription = () => {
             >
               Read
             </Link>
-            <Link
-              to={`/edit/${hbook.$id}`}
-              className="btn rounded-full bg-beige"
-            >
-              Edit
-            </Link>
-            <button className="btn rounded-full bg-beige">Save</button>
+            <button onClick={saveBook} className="btn rounded-full bg-beige">
+              Save
+            </button>
             <button className="btn rounded-full bg-beige">Audio Book</button>
           </div>
         </div>

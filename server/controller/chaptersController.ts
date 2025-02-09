@@ -5,7 +5,7 @@ import { ID,Query } from "appwrite";
 export const getAllChapters = async (req: Request, res: Response) => {
     try {
         const databaseId = process.env.VITE_DATABASE || "";
-        const collectionId = process.env.VITE_CHAPTERS_COLLECTION_ID || "";
+        const collectionId = process.env.VITE_COLLECTION_ID_CHAPTERS || "";
 
         const response = await databases.listDocuments(databaseId, collectionId);
         res.json(response.documents);

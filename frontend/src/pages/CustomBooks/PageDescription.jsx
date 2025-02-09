@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import "../../assets/css/page.css";
 import Review from "../../components/Book/Review";
-import { Link } from "react-router-dom";
+import { account } from "../../appwritee/appwrite"; // Ensure correct import
 
 export const PageDescription = () => {
   const { bookId } = useParams(); // Fetch the bookId from the URL params
@@ -25,7 +25,7 @@ export const PageDescription = () => {
         const data = await response.json();
         setBook(data);
       } catch (err) {
-        setError(err.message || "Something went wrong");
+        setError(err.message || "Failed to fetch book details");
       } finally {
         setLoading(false);
       }
@@ -34,9 +34,75 @@ export const PageDescription = () => {
     fetchBookDetails();
   }, [bookId]);
 
+  const saveBook = async () => {
+    try {
+      // 🔹 Get the user details from Appwrite
+      const userDetails = await account.get();
+      const userId = userDetails.$id;
+
+      // 🔹 Fetch user details from backend
+      const userResponse = await fetch(`http://localhost:5000/user/${userId}`);
+      console.log(userResponse);
+
+      if (!userResponse.ok) {
+        throw new Error("User not found");
+      }
+
+      const userData = await userResponse.json();
+
+      // 🔹 Ensure `custombooks` exists
+      const updatedBooks = userData.custombooks || [];
+
+      // 🔹 Check if book already exists
+      if (updatedBooks.includes(bookId)) {
+        alert("Book already saved!");
+        return;
+      }
+
+      updatedBooks.push(bookId); // Append new book
+
+      const response = await fetch(`http://localhost:5000/user/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ custombooks: updatedBooks }), // ✅ Fix key name
+      });
+      console.log(response);
+
+      if (!response.ok) {
+        throw new Error("Failed to update the user’s saved books");
+      }
+
+      if (response._id === bookId) {
+        alert("Book already saved!");
+      } else {
+        alert("Book saved successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while saving the book");
+    }
+  };
+
+  // Handle description rendering logic
+  const renderDescription = (text, limit, isExpanded, toggleExpand) => {
+    if (text.length <= limit) {
+      return <p>{text}</p>;
+    }
+    return (
+      <p>
+        {isExpanded ? text : `${text.substring(0, limit)}...`}
+        <button onClick={toggleExpand} className="text-color ml-2 underline">
+          {isExpanded ? "Show Less" : "Read More"}
+        </button>
+      </p>
+    );
+  };
+
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen ">
+      <div className="flex flex-col items-center justify-center h-screen">
         {/* Loader Animation */}
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#5E3023]"></div>
         {/* Loader Text */}
@@ -55,29 +121,15 @@ export const PageDescription = () => {
     return <div className="text-center text-color py-20">Book not found</div>;
   }
 
-  const renderDescription = (text, limit, isExpanded, toggleExpand) => {
-    if (text.length <= limit) {
-      return <p>{text}</p>;
-    }
-    return (
-      <p>
-        {isExpanded ? text : `${text.substring(0, limit)}...`}
-        <button onClick={toggleExpand} className="text-color ml-2 underline">
-          {isExpanded ? "Show Less" : "Read More"}
-        </button>
-      </p>
-    );
-  };
-
   return (
     <section>
       <div className="flex flex-col lg:flex-row items-center justify-between p-6 space-y-6 lg:space-y-0 lg:space-x-10">
         {/* Image Section */}
-        <div className="w-full lg:w-1/3 rounded-xl ">
+        <div className="w-full lg:w-1/3 rounded-xl">
           <img
             src={book.Novel_img}
             alt={book.Novel_Name}
-            className="w-full   object-cover rounded-lg"
+            className="w-full object-cover rounded-lg"
           />
         </div>
 
@@ -103,7 +155,9 @@ export const PageDescription = () => {
             <Link to={`/pdf/${book.$id}`} className="btn rounded-full">
               Read
             </Link>
-            <button className="btn rounded-full">Save</button>
+            <button onClick={saveBook} className="btn rounded-full">
+              Save
+            </button>
             <Link to="/read" className="btn rounded-full">
               Audio Book
             </Link>

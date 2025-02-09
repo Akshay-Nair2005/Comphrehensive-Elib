@@ -132,8 +132,7 @@ export const TextViewer = () => {
                   key={index}
                   onClick={() => setCurrentChapter(chapter)}
                   className={`cursor-pointer p-2 rounded ${
-                    currentChapter &&
-                    currentChapter.Chapter_title === chapter.Chapter_title
+                    currentChapter && currentChapter.$id === chapter.$id
                       ? darkMode
                         ? "bg-[#E1CDBB] text-black "
                         : "bg-[#5E3023] text-white"

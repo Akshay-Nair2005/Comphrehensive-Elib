@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import { FiUpload } from "react-icons/fi";
 import { storage } from "../../appwritee/appwrite"; // Import your Appwrite storage client
 import { ID } from "appwrite";
-import dotenv from "dotenv";
+import { account } from "../../appwritee/appwrite";
+import { useNavigate } from "react-router-dom";
 
 const HostedBookInfo = () => {
   const [hbookName, setHbookName] = useState("");
@@ -14,6 +15,7 @@ const HostedBookInfo = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const bucketid = import.meta.env.VITE_BUCKET_IMAGE_ID;
   const projectid = import.meta.env.VITE_PROJECT_ID;
@@ -26,11 +28,7 @@ const HostedBookInfo = () => {
 
     try {
       // Ensure file is passed as the first argument
-      const response = await storage.createFile(
-        "678df3f6000187260af8",
-        ID.unique(),
-        file
-      );
+      const response = await storage.createFile(bucketid, ID.unique(), file);
 
       // Construct the URL for the uploaded file
       const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketid}/files/${response.$id}/view?project=${projectid}&mode=admin`;
@@ -52,6 +50,7 @@ const HostedBookInfo = () => {
     }
 
     try {
+      const user = await account.get();
       // Ensure hbookNovelImg is a valid file object before uploading
       if (hbookNovelImg instanceof File) {
         // Upload the image and get the URL
@@ -70,18 +69,40 @@ const HostedBookInfo = () => {
             hbook_author: hbookAuthor,
             hbook_authdesc: hbookAuthDesc,
             hbook_novelimg: imageUrl,
+            userid: user.$id,
           }),
         });
 
         const data = await response.json();
+        console.log(data.$id);
         if (response.ok) {
           alert("Hosted book created successfully!");
+          navigate("/userbooks");
           console.log("Hosted Book Created:", data);
         } else {
           console.error("Error:", data.error);
         }
       } else {
         throw new Error("The file selected is not valid.");
+      }
+      //pathwork
+      const updateUserCreatedBooksResponse = await fetch(
+        `http://localhost:5000/user/${user.$id}`,
+        {
+          method: "PATCH", // Assuming PATCH is used to update a document
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            createdhostedbooks: [data.$id],
+          }),
+        }
+      );
+      if (updateUserCreatedBooksResponse.ok) {
+        alert("Chapter saved and linked to the hosted book successfully!");
+      } else {
+        const errorData = await updateUserCreatedBooksResponse.json();
+        // alert(`Failed to update hosted book: ${errorData.error}`);
       }
     } catch (error) {
       console.error("Error creating hosted book:", error);

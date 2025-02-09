@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { account } from "../../appwritee/appwrite"; // Ensure correct Appwrite client path
+import { account } from "../../appwritee/appwrite";
 import { ID } from "appwrite";
 import { useNavigate } from "react-router-dom";
 
@@ -7,26 +7,35 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const id = ID.unique(); // Generate unique ID
-
+  const id = ID.unique();
   const navigate = useNavigate();
 
   const handleSignup = async () => {
     try {
-      // Step 1: Create user in Appwrite Authentication
+      // Check if the user already exists
+      const existingSession = await account
+        .getSession("current")
+        .catch(() => null);
+      if (existingSession) {
+        alert("You are already logged in!");
+        navigate("/");
+        return;
+      }
+
+      // Create user in Appwrite Authentication
       const user = await account.create(id, email, password, name);
 
-      // Step 2: Send user details to the backend
+      // Send user details to backend
       await fetch("http://localhost:5000/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.$id, // Use the same Appwrite user ID
+          id: user.$id,
           User_name: name,
           User_Status: "reader",
-          User_desc: "New user", // Default description
+          User_desc: "New user",
         }),
       });
 
@@ -50,7 +59,6 @@ const Signup = () => {
     >
       <div className="flex w-full max-w-5xl bg-opacity-90 rounded-lg shadow-2xl border border-gray-300 p-6">
         <div className="flex w-full gap-x-6 m-10">
-          {/* Signup Form */}
           <div className="flex-1 flex flex-col justify-center p-8 rounded-lg">
             <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
               Sign Up
@@ -117,8 +125,6 @@ const Signup = () => {
               </a>
             </p>
           </div>
-
-          {/* Image Container */}
           <div className="flex-1">
             <img
               src="/images/libb.jpg"

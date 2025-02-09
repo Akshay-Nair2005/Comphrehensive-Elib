@@ -10,7 +10,10 @@ import {
   FaUserPlus,
   FaUserCircle,
   FaBook,
+  FaBookOpen,
 } from "react-icons/fa";
+
+import { BsChatDots } from "react-icons/bs";
 
 const Sidebar = () => {
   const [user, setUser] = useState(null);
@@ -57,7 +60,7 @@ const Sidebar = () => {
                 `flex items-center space-x-4 pl-4 py-3 rounded-r-full transition-all duration-300 ${
                   isActive
                     ? "bg-beige text-black"
-                    : "hover:bg-[#E1CDBB] hover:text-black text-white"
+                    : "hover:bg-[#E1CDBB]  hover:text-black text-white"
                 }`
               }
             >
@@ -82,7 +85,7 @@ const Sidebar = () => {
           </li>
           <li className="relative group">
             <NavLink
-              to="/info"
+              to="/userbooks"
               className={({ isActive }) =>
                 `flex items-center space-x-4 pl-4 py-3 rounded-r-full transition-all duration-300 ${
                   isActive
@@ -97,19 +100,40 @@ const Sidebar = () => {
               </span>
             </NavLink>
           </li>
+          <li className="relative group">
+            <NavLink
+              to="/saved"
+              className={({ isActive }) =>
+                `flex items-center space-x-4 pl-4 py-3 rounded-r-full transition-all duration-300 ${
+                  isActive
+                    ? "bg-beige text-black"
+                    : "hover:bg-[#E1CDBB] hover:text-black text-white"
+                }`
+              }
+            >
+              <FaBookOpen />
+              <span className="hidden group-hover:inline-block">
+                Saved Books
+              </span>
+            </NavLink>
+          </li>
+          <li className="relative group">
+            <NavLink
+              to="/chat"
+              className={({ isActive }) =>
+                `flex items-center space-x-4 pl-4 py-3 rounded-r-full transition-all duration-300 ${
+                  isActive
+                    ? "bg-beige text-black"
+                    : "hover:bg-[#E1CDBB] hover:text-black text-white"
+                }`
+              }
+            >
+              <BsChatDots size={18} />
+              <span className="hidden group-hover:inline-block">NovelChat</span>
+            </NavLink>
+          </li>
           {user ? (
             <>
-              <li className="relative group">
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-4 pl-4 py-3 rounded-r-full w-full transition-all duration-300 hover:bg-red-500 hover:text-black text-white"
-                >
-                  <FaSignOutAlt />
-                  <span className="hidden group-hover:inline-block">
-                    Logout
-                  </span>
-                </button>
-              </li>
               <li className="relative group">
                 <NavLink
                   to="/user"
@@ -126,6 +150,17 @@ const Sidebar = () => {
                     {user.name}
                   </span>
                 </NavLink>
+              </li>
+              <li className="relative group">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-4 pl-4 py-3 rounded-r-full w-full transition-all duration-300 hover:bg-red-500 hover:text-black text-white"
+                >
+                  <FaSignOutAlt />
+                  <span className="hidden group-hover:inline-block">
+                    Logout
+                  </span>
+                </button>
               </li>
             </>
           ) : (

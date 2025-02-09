@@ -19,6 +19,9 @@ import PdfReader from "./pages/CustomBooks/Pdfreader";
 import UserProfile from "./pages/User/UserProfile";
 import HomeLayout from "./layouts/HomeLayout"; // Import a separate layout for the homepage
 import AboutUs from "./pages/AboutUs";
+import SavedBooks from "./pages/User/SavedBooks";
+import UserBooks from "./pages/User/UserBooks";
+import UserChatApp from "./pages/User/UserChatApp";
 
 export const routes = createBrowserRouter([
   {
@@ -36,6 +39,9 @@ export const routes = createBrowserRouter([
       { path: "/info", element: <HostedBookInfo /> },
       { path: "/user", element: <UserProfile /> },
       { path: "/about", element: <AboutUs /> },
+      { path: "/saved", element: <SavedBooks /> },
+      { path: "/userbooks", element: <UserBooks /> },
+      { path: "/chat", element: <UserChatApp /> },
     ],
   },
   { path: "/login", element: <Login /> },

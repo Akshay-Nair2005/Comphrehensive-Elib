@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { current } from "@reduxjs/toolkit";
 
 export const Home = () => {
   const [images, setImages] = useState([]);

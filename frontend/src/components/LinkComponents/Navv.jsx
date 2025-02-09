@@ -65,6 +65,9 @@ const Navv = () => {
           {user ? (
             <>
               {/* If user is logged in */}
+              <li className={linkClass}>
+                <NavLink to="/user">Hello, {user.name}</NavLink>
+              </li>
               <li>
                 <button
                   onClick={handleLogout}
@@ -72,9 +75,6 @@ const Navv = () => {
                 >
                   Logout
                 </button>
-              </li>
-              <li className={linkClass}>
-                <NavLink to="/user">Hello, {user.name}</NavLink>
               </li>
             </>
           ) : (

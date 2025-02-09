@@ -1,18 +1,22 @@
 import express from "express";
-import {
-    createUser
-   
+import { 
+  updateUserBooks, 
+  getAllUsers, 
+  getUserById, 
+  createUser, 
+  updateUserHbooks, 
+  deleteUserBooks, 
+  usernamedesc
 } from "../controller/userController";
 
 const router = express.Router();
 
-// Route to fetch all chapters
-// router.get("/", getAllChapters);
-
-// // Route to fetch a specific chapter by ID
-// router.get("/:id", getChapterById);
-
-// Route to create a new chapter
+router.get("/", getAllUsers);
+router.get("/:id", getUserById);
 router.post("/", createUser);
+router.put("/:id", updateUserBooks);
+router.put("/:hid/hostedbooks", updateUserHbooks);
+router.delete("/:id", deleteUserBooks); // ✅ Use DELETE for deletion
+router.put("/:id/user",usernamedesc ); // ✅ Use DELETE for deletion
 
 export default router;

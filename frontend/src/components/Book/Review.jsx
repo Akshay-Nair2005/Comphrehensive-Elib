@@ -91,7 +91,7 @@ const Review = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="px-4 py-2 bg-button text-color rounded-md"
+              className="px-4 py-2 bg-button text-white rounded-md"
             >
               Submit Review
             </button>

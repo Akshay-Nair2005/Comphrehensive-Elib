@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 ("use client");
 
@@ -55,7 +55,7 @@ export const CustomEditor = () => {
       const updateHostedBookResponse = await fetch(
         `http://localhost:5000/hbooks/${hbookIdd}`,
         {
-          method: "POST", // Assuming PATCH is used to update a document
+          method: "PATCH", // Assuming PATCH is used to update a document
           headers: {
             "Content-Type": "application/json",
           },
@@ -77,13 +77,15 @@ export const CustomEditor = () => {
     } catch (error) {
       console.error(error);
       alert("Chapter Saved.");
+      setTitle("");
+      editorRef.current.setValue("");
     }
   }
 
   return (
-    <div className="h-screen w-screen bg-gradient-to-r from-gray-900 to-gray-800 flex flex-col">
+    <div className="h-screen w-screen bg-[#E1CDBB] flex flex-col">
       {/* Header Section */}
-      <header className="flex items-center justify-between px-6 py-4 bg-gray-800 shadow-lg">
+      <header className="flex items-center justify-between px-6 py-4 bg-[#5E3023] shadow-lg">
         <div>
           <h1 className="text-2xl font-title text-white">
             Write Your Own Novel
@@ -99,7 +101,7 @@ export const CustomEditor = () => {
           />
           <button
             onClick={saveValue}
-            className="ml-4 px-6 py-2 font-semibold text-white bg-button rounded-lg shadow-md"
+            className="ml-4 px-6 py-2 font-semibold text-black bg-beige  rounded-lg shadow-md"
           >
             Save Chapter
           </button>

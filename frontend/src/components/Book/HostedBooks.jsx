@@ -4,7 +4,12 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "react-loading-skeleton/dist/skeleton.css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const HostedBooks = ({ isHome = false }) => {
   const [hbooks, setBooks] = useState([]);
@@ -43,7 +48,6 @@ const HostedBooks = ({ isHome = false }) => {
     fetchBooks();
   }, []);
 
-  // Handle filtering by search and genre
   useEffect(() => {
     let filtered = hbooks;
 
@@ -55,7 +59,6 @@ const HostedBooks = ({ isHome = false }) => {
 
     if (selectedGenre !== "All") {
       filtered = filtered.filter((book) => {
-        // Check if the book's genres (comma-separated) include the selected genre
         const bookGenres = book.hbook_genre.split(",").map((g) => g.trim());
         return bookGenres.includes(selectedGenre);
       });
@@ -65,7 +68,7 @@ const HostedBooks = ({ isHome = false }) => {
   }, [searchQuery, selectedGenre, hbooks]);
 
   const skeletons = Array.from({ length: isHome ? 3 : 6 });
-  const hostedbook = isHome ? filteredBooks.slice(0, 3) : filteredBooks;
+  const hostedbook = isHome ? filteredBooks.slice(0, 5) : filteredBooks;
 
   return (
     <section className="px-4 py-10 h-[100vh]">
@@ -87,7 +90,7 @@ const HostedBooks = ({ isHome = false }) => {
 
         {/* Filters */}
         {!isHome && (
-          <div className="flex justify-between px-6 mb-6">
+          <div className="flex flex-col md:flex-row gap-4 mb-6 px-6">
             <input
               type="text"
               placeholder="Search by name"
@@ -109,34 +112,94 @@ const HostedBooks = ({ isHome = false }) => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {loading
-            ? skeletons.map((_, index) => (
-                <div key={index} className="p-4 bg-gray-800 rounded-md">
-                  <Skeleton
-                    height={200}
-                    baseColor="#E1CDBB"
-                    highlightColor="#5E3023"
-                  />
-                  <Skeleton
-                    height={24}
-                    className="mt-4"
-                    baseColor="#E1CDBB"
-                    highlightColor="#5E3023"
-                  />
-                  <Skeleton
-                    height={16}
-                    width="80%"
-                    className="mt-2"
-                    baseColor="#E1CDBB"
-                    highlightColor="#5E3023"
-                  />
-                </div>
-              ))
-            : hostedbook.map((hnovel) => (
-                <Hbooklisting hnovel={hnovel} key={hnovel.$id} />
+        {isHome ? (
+          loading ? (
+            <Swiper
+              spaceBetween={20}
+              slidesPerView={1}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3000 }}
+              modules={[Navigation, Pagination, Autoplay]}
+              className="w-full"
+            >
+              {skeletons.map((_, index) => (
+                <SwiperSlide key={index}>
+                  <div className="p-4 rounded-md">
+                    <Skeleton
+                      height={200}
+                      baseColor="#E1CDBB"
+                      highlightColor="#5E3023"
+                    />
+                    <Skeleton
+                      height={24}
+                      className="mt-4"
+                      baseColor="#E1CDBB"
+                      highlightColor="#5E3023"
+                    />
+                    <Skeleton
+                      height={16}
+                      width="80%"
+                      className="mt-2"
+                      baseColor="#E1CDBB"
+                      highlightColor="#5E3023"
+                    />
+                  </div>
+                </SwiperSlide>
               ))}
-        </div>
+            </Swiper>
+          ) : (
+            <Swiper
+              spaceBetween={20}
+              slidesPerView={2}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3000 }}
+              modules={[Navigation, Pagination, Autoplay]}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+              }}
+              className="w-full"
+            >
+              {hostedbook.map((hnovel) => (
+                <SwiperSlide key={hnovel.$id}>
+                  <Hbooklisting hnovel={hnovel} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {loading
+              ? skeletons.map((_, index) => (
+                  <div key={index} className="p-4 rounded-md">
+                    <Skeleton
+                      height={200}
+                      baseColor="#E1CDBB"
+                      highlightColor="#5E3023"
+                    />
+                    <Skeleton
+                      height={24}
+                      className="mt-4"
+                      baseColor="#E1CDBB"
+                      highlightColor="#5E3023"
+                    />
+                    <Skeleton
+                      height={16}
+                      width="80%"
+                      className="mt-2"
+                      baseColor="#E1CDBB"
+                      highlightColor="#5E3023"
+                    />
+                  </div>
+                ))
+              : hostedbook.map((hnovel) => (
+                  <Hbooklisting hnovel={hnovel} key={hnovel.$id} />
+                ))}
+          </div>
+        )}
+
         {error && <p className="text-red-500">{error}</p>}
       </div>
     </section>
