@@ -199,13 +199,22 @@ const HostedBookInfo = () => {
               <label className="block text-sm font-medium text-white">
                 Genre
               </label>
-              <input
-                type="text"
-                placeholder="Select a Category"
+              <select
                 value={hbookGenre}
                 onChange={(e) => setHbookGenre(e.target.value)}
                 className="w-full mt-1 p-3 bg-white text-black border border-[#5E3023] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E1CDBB]"
-              />
+              >
+                <option value="" disabled>
+                  Select a Genre
+                </option>
+                <option value="Anime">Anime</option>
+                <option value="Non-Fiction">Non-Fiction</option>
+                <option value="Fantasy">Fantasy</option>
+                <option value="Sci-Fi">Sci-Fi</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Mystery">Mystery</option>
+                <option value="Romance">Romance</option>
+              </select>
             </div>
 
             <div>

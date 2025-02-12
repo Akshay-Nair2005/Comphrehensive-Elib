@@ -161,6 +161,12 @@ export const HbookPageDescription = () => {
               Save
             </button>
             <button className="btn rounded-full bg-beige">Audio Book</button>
+            <Link
+              to={`/uedit/${hbook.$id}`}
+              className="btn rounded-full bg-beige"
+            >
+              Read
+            </Link>
           </div>
         </div>
       </div>

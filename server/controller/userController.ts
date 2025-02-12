@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { databases } from "../services/appwriteClient";
+import { users, databases } from "../services/appwriteClient";
 import {  ID } from "appwrite";
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -31,7 +31,7 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const { id,User_name,User_Status,User_desc} = req.body;
+        const { id,User_name,User_Status,User_desc,user_email} = req.body;
 
         if (!id || !User_name || !User_Status || !User_desc) {
             res.status(400).json({ error: "All fields are required." });
@@ -48,6 +48,7 @@ export const createUser = async (req: Request, res: Response) => {
             custombooks : [],
             User_name,
             createdhostedbooks : [],
+            user_email,
         });
 
         res.status(201).json(response);
@@ -181,3 +182,33 @@ export const usernamedesc = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to update user books" });
   }
 };
+
+
+export const createContributions = async (req: Request, res: Response) => {
+  try {
+      const { id,userid,hostedbooksid,username,hostedbookname,author_name,chaptertitle,chaptercontent} = req.body;
+
+      if (!id ||!userid || !hostedbooksid || !username || !hostedbookname || !author_name || !chaptertitle || !chaptercontent) {
+          res.status(400).json({ error: "All fields are required." });
+          return;
+      }
+
+      const databaseId = process.env.VITE_DATABASE || "";
+      const collectionId = process.env.VITE_COLLECTION_ID_CONTRIBUTIONS|| "";
+
+      const response = await databases.createDocument(databaseId, collectionId,id , {      
+          userid,
+          hostedbooksid,
+          username,
+          hostedbookname,
+          author_name,
+          chaptertitle,
+          chaptercontent,
+      });
+
+      res.status(201).json(response);
+  } catch (error) {
+      console.error("Error creating User:", error);
+      res.status(500).json({ error: "Failed to create Contribution Document" });
+  }
+} 

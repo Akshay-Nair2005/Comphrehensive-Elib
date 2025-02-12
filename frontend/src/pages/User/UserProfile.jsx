@@ -3,6 +3,7 @@ import { account, storage, databases } from "../../appwritee/appwrite";
 import { FaCamera, FaSave, FaEdit, FaBook, FaTrash } from "react-icons/fa";
 import { ID } from "appwrite";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -174,30 +175,45 @@ const UserProfile = () => {
         </div>
 
         <div className="mt-8 grid grid-cols-3 gap-6">
-          <div className="bg-button p-6 rounded-lg shadow-md text-center">
+          <Link
+            to="/saved"
+            className="bg-button p-6 rounded-lg shadow-md text-center"
+          >
             <FaBook className="text-white text-4xl mx-auto" />
             <p className="text-lg font-semibold mt-2 text-white">
               Custom Books
             </p>
             <p className="text-2xl font-bold text-white">{customBooksCount}</p>
-          </div>
-          <div className="bg-button p-6 rounded-lg shadow-md text-center">
+          </Link>
+          <Link
+            to="/saved"
+            className="bg-button p-6 rounded-lg shadow-md text-center"
+          >
             <FaBook className="text-white text-4xl mx-auto" />
             <p className="text-lg font-semibold mt-2 text-white">
               Hosted Books
             </p>
             <p className="text-2xl font-bold text-white">{hostedBooksCount}</p>
-          </div>
-          <div className="bg-button p-6 rounded-lg shadow-md text-center">
+          </Link>
+          <Link
+            to="/userbooks"
+            className="bg-button p-6 rounded-lg shadow-md text-center"
+          >
             <FaBook className="text-white text-4xl mx-auto" />
             <p className="text-lg font-semibold mt-2 text-white">Your Books</p>
             <p className="text-2xl font-bold text-white">
               {createdHostedBooksCount}
             </p>
-          </div>
+          </Link>
         </div>
 
-        <div className="mt-6 flex justify-between">
+        <div className="mt-6 flex justify-end">
+          {/* <button
+            onClick={handleDeleteAccount}
+            className="bg-red-600 text-white px-6 py-2 rounded-lg flex items-center shadow-md hover:bg-red-700 transition"
+          >
+            <FaTrash className="mr-2" /> Delete Account
+          </button> */}
           {isEditing ? (
             <button
               onClick={handleSave}
@@ -213,13 +229,6 @@ const UserProfile = () => {
               <FaEdit className="mr-2" /> Edit Profile
             </button>
           )}
-
-          <button
-            onClick={handleDeleteAccount}
-            className="bg-red-600 text-white px-6 py-2 rounded-lg flex items-center shadow-md hover:bg-red-700 transition"
-          >
-            <FaTrash className="mr-2" /> Delete Account
-          </button>
         </div>
       </div>
     </div>

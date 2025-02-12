@@ -151,7 +151,7 @@ const HostedBooks = ({ isHome = false }) => {
           ) : (
             <Swiper
               spaceBetween={20}
-              slidesPerView={2}
+              slidesPerView={3}
               navigation
               pagination={{ clickable: true }}
               autoplay={{ delay: 3000 }}
@@ -161,6 +161,9 @@ const HostedBooks = ({ isHome = false }) => {
                 1024: { slidesPerView: 3 },
               }}
               className="w-full"
+              style={{
+                "--swiper-navigation-color": "#5E3023",
+              }}
             >
               {hostedbook.map((hnovel) => (
                 <SwiperSlide key={hnovel.$id}>

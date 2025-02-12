@@ -6,7 +6,8 @@ import {
   createUser, 
   updateUserHbooks, 
   deleteUserBooks, 
-  usernamedesc
+  usernamedesc,
+  // deleteuser
 } from "../controller/userController";
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.put("/:id", updateUserBooks);
 router.put("/:hid/hostedbooks", updateUserHbooks);
 router.delete("/:id", deleteUserBooks); // ✅ Use DELETE for deletion
 router.put("/:id/user",usernamedesc ); // ✅ Use DELETE for deletion
+// router.post('/delete-user', deleteuser);
 
 export default router;

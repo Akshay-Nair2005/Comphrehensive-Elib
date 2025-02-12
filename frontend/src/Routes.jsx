@@ -22,12 +22,18 @@ import AboutUs from "./pages/AboutUs";
 import SavedBooks from "./pages/User/SavedBooks";
 import UserBooks from "./pages/User/UserBooks";
 import UserChatApp from "./pages/User/UserChatApp";
+import UserChatRoom from "./pages/User/UserChatRoom";
+import ForgotPassword from "./pages/Auth/ForgetPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 export const routes = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout />, // Use HomeLayout for the homepage
-    children: [{ path: "/", element: <HomePage /> }],
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/room", element: <UserChatRoom /> },
+    ],
   },
   {
     path: "/",
@@ -46,6 +52,8 @@ export const routes = createBrowserRouter([
   },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/forgetpass", element: <ForgotPassword /> },
+  { path: "/resetpass", element: <ResetPassword /> },
   { path: "/hnovels", element: <HostedBooks /> },
   { path: "/novels", element: <AllNovels /> },
   { path: "/text/:hbookTId", element: <TextViewer /> },

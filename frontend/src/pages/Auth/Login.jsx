@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import { account } from "../../appwritee/appwrite";
 import { FaEnvelope, FaKey } from "react-icons/fa"; // Importing icons
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [focusedInput, setFocusedInput] = useState(""); // Tracks focused input
+  const [isLoggingIn, setIsLoggingIn] = useState(false); // Track if login is in progress
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
   // 🔹 Check if user is already logged in
@@ -23,12 +27,15 @@ const Login = () => {
   }, [navigate]);
 
   const handleLogin = async () => {
+    setIsLoggingIn(true); // Set login state to true when login is triggered
     try {
       await account.createEmailPasswordSession(email, password);
       alert("Logged in successfully!");
       navigate("/");
     } catch (error) {
       alert("Login failed: " + error.message);
+    } finally {
+      setIsLoggingIn(false); // Reset login state after the request is complete
     }
   };
 
@@ -49,6 +56,7 @@ const Login = () => {
           {/* Login Container */}
           <div className="flex-1 flex flex-col justify-center p-8">
             <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">
+              {/* {isLoggingIn ? "Logging In..." : "Login"} */}
               Login
             </h2>
             <form
@@ -87,7 +95,7 @@ const Login = () => {
               >
                 <FaKey className="text-[brown] mr-2" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   placeholder="Enter your password"
                   value={password}
@@ -97,14 +105,29 @@ const Login = () => {
                   className="w-full bg-transparent focus:outline-none text-gray-800"
                   required
                 />
+                <span
+                  className=""
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
               </div>
 
               <button
                 type="submit"
                 className="w-full bg-[#5E3023] text-white py-2 px-4 rounded-lg hover:bg-[#4d2419] transition duration-300 font-semibold"
+                disabled={isLoggingIn} // Disable button during login
               >
-                Login
+                {isLoggingIn ? "Logging In..." : "Login"}
               </button>
+              <p className="text-sm text-gray-600 text-center mt-4">
+                <a
+                  href="/forgetpass"
+                  className="text-[#5E3023] hover:underline font-medium"
+                >
+                  Forgot Password?
+                </a>
+              </p>
             </form>
             <p className="text-sm text-gray-600 text-center mt-4">
               Don’t have an account?{" "}

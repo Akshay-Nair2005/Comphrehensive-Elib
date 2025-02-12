@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cloudpdf/viewer": "^1.0.5",
     "@liveblocks/client": "^2.16.2",
     "@liveblocks/react": "^2.16.2",
     "@liveblocks/react-tiptap": "^2.16.2",

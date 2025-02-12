@@ -11,7 +11,9 @@ import {
   FaUserCircle,
   FaBook,
   FaBookOpen,
+  FaComment,
 } from "react-icons/fa";
+import { AiOutlineRobot } from "react-icons/ai";
 
 import { BsChatDots } from "react-icons/bs";
 
@@ -34,10 +36,14 @@ const Sidebar = () => {
 
   const handleLogout = async () => {
     try {
-      await account.deleteSession("current");
-      setUser(null);
-      alert("You have been logged out!");
-      navigate("/login");
+      const confirmation = confirm("Do you want to logout?");
+      if (confirmation) {
+        await account.deleteSession("current");
+        setUser(null);
+        navigate("/login");
+      } else {
+        console.log("Logout cancelled by the user.");
+      }
     } catch (err) {
       console.error("Logout failed:", err.message);
     }
@@ -128,8 +134,23 @@ const Sidebar = () => {
                 }`
               }
             >
-              <BsChatDots size={18} />
+              <AiOutlineRobot size={18} />
               <span className="hidden group-hover:inline-block">NovelChat</span>
+            </NavLink>
+          </li>
+          <li className="relative group">
+            <NavLink
+              to="/room"
+              className={({ isActive }) =>
+                `flex items-center space-x-4 pl-4 py-3 rounded-r-full transition-all duration-300 ${
+                  isActive
+                    ? "bg-beige text-black"
+                    : "hover:bg-[#E1CDBB] hover:text-black text-white"
+                }`
+              }
+            >
+              <FaComment size={18} />
+              <span className="hidden group-hover:inline-block">Chat Room</span>
             </NavLink>
           </li>
           {user ? (
