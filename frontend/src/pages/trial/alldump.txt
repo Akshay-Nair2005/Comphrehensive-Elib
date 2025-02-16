@@ -298,3 +298,340 @@ export const Home = () => {
   );
 };
 
+
+
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { account } from "../../appwritee/appwrite"; // Adjust the import path based on your setup
+
+export const AuthorTextViewer = () => {
+  const { ahbookId } = useParams();
+  const [userId, setUserId] = useState(null);
+  const [author, setAuthor] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserAndHostedBook = async () => {
+      try {
+        // Get logged-in user details
+        const user = await account.get();
+        setUserId(user.$id);
+
+        // Fetch user details including created hosted books
+        const response = await axios.get(`/user/${user.$id}`);
+        const authorData = response.data;
+
+        // Check if the ahbookId exists in createdhostedbooks
+        const matchedBook = authorData.createdhostedbooks?.find(
+          (book) => book.id === ahbookId
+        );
+
+        if (matchedBook) {
+          setAuthor({ ...authorData, matchedBook });
+        } else {
+          setAuthor(null);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setAuthor(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAndHostedBook();
+  }, [ahbookId]);
+
+  if (loading) return <p>Loading...</p>;
+  if (!author) return <p>No matching hosted book found.</p>;
+
+  return (
+    <div>
+      {/* <h1>{author.name}</h1>
+      <p>{author.bio}</p> */}
+
+      <div>
+        <h2>{author.matchedBook.hbook_name}</h2>
+        <p>{author.matchedBook.hbook_desc}</p>
+
+        {author.matchedBook.contributions?.length > 0 ? (
+          <ul>
+            {author.matchedBook.contributions.map((contribution) => (
+              <li key={contribution._id}>{contribution.Chapter_title}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No contributions available.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+
+
+////custom Editor
+import React, { useRef, useState, useEffect } from "react";
+import Editor from "@monaco-editor/react";
+("use client");
+
+import {
+  LiveblocksProvider,
+  RoomProvider,
+  ClientSideSuspense,
+} from "@liveblocks/react/suspense";
+import { useParams } from "react-router-dom";
+
+export const CustomEditor = () => {
+  const { hbookIdd } = useParams(); // Extract hostedBookId (hbookIdd) from URL params
+  const editorRef = useRef(null);
+  const [Chapter_title, setTitle] = useState(""); // State for chapter title
+  const [saving, setSaving] = useState(false);
+
+  // Store editor instance in ref
+  function handleEditorDidMount(editor) {
+    editorRef.current = editor;
+  }
+
+  // Save editor value and title to Appwrite database
+  async function saveValue() {
+    const Chapter_content = editorRef.current.getValue();
+
+    if (!Chapter_title.trim()) {
+      alert("Title is required!");
+      return;
+    }
+    setSaving(true);
+
+    try {
+      // First, save the chapter to the chapters collection
+      const chapterResponse = await fetch("http://localhost:5000/chapters", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Chapter_title,
+          Chapter_content,
+          hostedBookId: hbookIdd,
+        }),
+      });
+
+      if (!chapterResponse.ok) {
+        const errorData = await chapterResponse.json();
+        // alert(`Failed to save chapter: ${errorData.error}`);
+        return;
+      }
+
+      const chapterData = await chapterResponse.json();
+      console.log(chapterData);
+
+      // Once the chapter is saved, update the hosted book with the new chapter
+      const updateHostedBookResponse = await fetch(
+        `http://localhost:5000/hbooks/${hbookIdd}`,
+        {
+          method: "PATCH", // Assuming PATCH is used to update a document
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chapters: [
+              chapterData.Chapter_title, // Add chapter title to the hosted book's list
+              chapterData.Chapter_content, // Add the chapter to the hosted book's chapters list
+            ],
+          }),
+        }
+      );
+
+      if (updateHostedBookResponse.ok) {
+        alert("Chapter saved and linked to the hosted book successfully!");
+      } else {
+        const errorData = await updateHostedBookResponse.json();
+        // alert(`Failed to update hosted book: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Chapter Saved.");
+      setTitle("");
+      editorRef.current.setValue("");
+    } finally {
+      setSaving(false); // Stop showing "Saving..."
+    }
+  }
+
+  return (
+    <div className="h-screen w-screen bg-[#E1CDBB] flex flex-col">
+      {/* Header Section */}
+      <header className="flex items-center justify-between px-6 py-4 bg-[#5E3023] shadow-lg">
+        <div>
+          <h1 className="text-2xl font-title text-white">
+            Write Your Own Novel
+          </h1>
+        </div>
+        <div>
+          <input
+            type="text"
+            placeholder="Enter Chapter Title"
+            value={Chapter_title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="flex-grow max-w-lg px-4 py-2 text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={saveValue}
+            className="ml-4 px-6 py-2 font-semibold text-black bg-beige rounded-lg shadow-md"
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save Chapter"}
+          </button>
+        </div>
+      </header>
+
+      {/* Editor Section */}
+      <div className="flex-grow p-6">
+        <div className="h-full rounded-lg shadow-lg bg-gray-900 border border-gray-700">
+          {/* <LiveblocksProvider
+            publicApiKey={
+              "pk_dev_Qz2atFlSFAL8PXJQv3V0EwsIrkZ3vmV1uwnDpR3fzPt2_0sVKO8Kt-e2Wric2PcO"
+            }
+          >
+            <RoomProvider id="my-room">
+              <ClientSideSuspense fallback={<div>Loading…</div>}> */}
+          <Editor
+            height="100%"
+            defaultLanguage="plaintext"
+            defaultValue=""
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+            }}
+          />
+          {/* </ClientSideSuspense>
+            </RoomProvider>
+          </LiveblocksProvider> */}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
+////QUilll editor
+
+
+import React, { useRef, useState } from "react";
+import Editor from "./Editor";
+import { useParams } from "react-router-dom";
+import Quill from "quill";
+
+const Delta = Quill.import("delta");
+
+export const CustomEditor = () => {
+  const { hbookIdd } = useParams();
+  const quillRef = useRef();
+  const [Chapter_title, setTitle] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [range, setRange] = useState();
+  const [lastChange, setLastChange] = useState();
+  const [readOnly, setReadOnly] = useState(false);
+
+  async function saveValue() {
+    const Chapter_content = quillRef.current?.getText();
+
+    if (!Chapter_title.trim()) {
+      alert("Title is required!");
+      return;
+    }
+    setSaving(true);
+
+    try {
+      const chapterResponse = await fetch("http://localhost:5000/chapters", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Chapter_title,
+          Chapter_content,
+          hostedBookId: hbookIdd,
+        }),
+      });
+
+      if (!chapterResponse.ok) {
+        const errorData = await chapterResponse.json();
+        return;
+      }
+
+      const chapterData = await chapterResponse.json();
+      console.log(chapterData);
+
+      const updateHostedBookResponse = await fetch(
+        `http://localhost:5000/hbooks/${hbookIdd}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chapters: [chapterData.Chapter_title, chapterData.Chapter_content],
+          }),
+        }
+      );
+
+      if (updateHostedBookResponse.ok) {
+        alert("Chapter saved and linked to the hosted book successfully!");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Chapter Saved.");
+      setTitle("");
+      quillRef.current?.setText("");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="h-screen w-screen bg-[#E1CDBB] flex flex-col">
+      <header className="flex items-center justify-between px-6 py-4 bg-[#5E3023] shadow-lg">
+        <h1 className="text-2xl font-title text-white">Write Your Own Novel</h1>
+        <div>
+          <input
+            type="text"
+            placeholder="Enter Chapter Title"
+            value={Chapter_title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="flex-grow max-w-lg px-4 py-2 text-gray-900 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={saveValue}
+            className="ml-4 px-6 py-2 font-semibold text-black bg-beige rounded-lg shadow-md"
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Save Chapter"}
+          </button>
+        </div>
+      </header>
+      <div className="flex-grow p-6">
+        <div className="h-full rounded-lg shadow-lg bg-gray-900 border border-gray-700">
+          <Editor
+            ref={quillRef}
+            readOnly={readOnly}
+            defaultValue={new Delta()
+              .insert("Hello")
+              .insert("\n", { header: 1 })
+              .insert("Some ")
+              .insert("initial", { bold: true })
+              .insert(" ")
+              .insert("content", { underline: true })
+              .insert("\n")}
+            onSelectionChange={setRange}
+            onTextChange={setLastChange}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};

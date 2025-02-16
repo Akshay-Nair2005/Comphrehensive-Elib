@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { databases, client, account } from "../../appwritee/appwrite";
+import { databases, client, account, storage } from "../../appwritee/appwrite";
 import { ID } from "appwrite";
 import { FaPaperPlane } from "react-icons/fa";
 
 const DATABASE_ID = "674ad544002c56d61b63";
 const COLLECTION_ID = "67ab0db300206486f186";
+const BUCKET_ID = "678df3f6000187260af8";
+const PROJECT_ID = "67458dd70030fdd03393";
 
-function UserChatRoom() {
+const UserChatRoom = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [userDetails, setUserDetails] = useState(null);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -45,18 +48,50 @@ function UserChatRoom() {
     return () => unsubscribe();
   }, []);
 
+  const handleFileUpload = (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) return;
+
+    setFile({
+      file: selectedFile,
+      type: selectedFile.type, // Capture MIME type
+      name: selectedFile.name, // Store file name
+    });
+  };
+
   const sendMessage = async () => {
-    if (!message.trim() || !userDetails) return;
+    if ((!message.trim() && !file) || !userDetails) return;
 
     try {
+      let fileurl = "";
+      let filetype = "";
+      let filename = "";
+
+      if (file) {
+        const fileId = ID.unique();
+        const uploadResponse = await storage.createFile(
+          BUCKET_ID,
+          fileId,
+          file.file
+        );
+
+        fileurl = `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${uploadResponse.$id}/view?project=${PROJECT_ID}&mode=admin`;
+        filetype = file.type;
+        filename = file.name;
+      }
+
       await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
         userid: userDetails.$id,
         message,
         timestamp: Date.now().toString(),
         username: userDetails.name,
+        fileurl,
+        filetype,
+        filename,
       });
 
       setMessage("");
+      setFile(null);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -64,13 +99,11 @@ function UserChatRoom() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Chat Header */}
       <div className="bg-[#5E3023] text-white text-lg font-semibold py-4 px-6 shadow-md sticky top-0">
         Novel Chat Room
       </div>
 
-      {/* Messages Container */}
-      <div className="flex-1 bg-[] overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 bg-gray-100 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div
             key={msg.$id}
@@ -88,14 +121,93 @@ function UserChatRoom() {
               <span className="block text-sm font-semibold">
                 {msg.username || "Unknown"}
               </span>
-              <p className="text-sm">{msg.message}</p>
+              {msg.message && <p className="text-sm">{msg.message}</p>}
+
+              {/* File Preview Logic */}
+              {msg.fileurl && msg.filetype?.startsWith("image/") ? (
+                <div>
+                  <img
+                    src={msg.fileurl}
+                    alt="Uploaded file"
+                    className="mt-2 max-w-xs rounded-md h-32 object-cover"
+                  />
+                  <div className="flex justify-end">
+                    <a
+                      href={msg.fileurl}
+                      target="_blank"
+                      className="text-blue-500 underline"
+                    >
+                      View
+                    </a>
+                    {/* <a
+                      href={msg.fileurl}
+                      download
+                      className="text-green-500 underline"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const link = document.createElement("a");
+                        link.href = msg.fileurl;
+                        link.download = msg.filename || "download";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                    >
+                      Download
+                    </a> */}
+                  </div>
+                </div>
+              ) : msg.filetype === "application/pdf" ? (
+                <div className="bg-gray-200 p-2 rounded-md mt-2 flex items-center">
+                  📄 {msg.filename || "Document"}
+                  <a
+                    href={msg.fileurl}
+                    target="_blank"
+                    className="ml-auto text-blue-500 underline"
+                  >
+                    View File
+                  </a>
+                </div>
+              ) : msg.fileurl ? (
+                <div className="bg-gray-200 p-2 rounded-md mt-2 flex items-center">
+                  📎 {msg.filename || "Unknown File"}
+                  <a
+                    href={msg.fileurl}
+                    target="_blank"
+                    className="ml-auto text-blue-500 underline"
+                  >
+                    View
+                  </a>
+                </div>
+              ) : null}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Input Area */}
       <div className="flex items-center bg-white p-3 border-t shadow-md">
+        <input
+          type="file"
+          onChange={handleFileUpload}
+          className="hidden"
+          id="fileInput"
+        />
+        <label
+          htmlFor="fileInput"
+          className="cursor-pointer text-blue-500 mr-2"
+        >
+          📎
+        </label>
+
+        {file && (
+          <div className="bg-gray-200 p-2 rounded-md flex items-center">
+            📂 {file.name}
+            <button className="ml-2 text-red-500" onClick={() => setFile(null)}>
+              ✖
+            </button>
+          </div>
+        )}
+
         <input
           type="text"
           className="flex-1 p-2 border rounded-full outline-none focus:ring-2 focus:ring-blue-500"
@@ -103,15 +215,16 @@ function UserChatRoom() {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
         />
+
         <button
           onClick={sendMessage}
-          className="ml-3  bg-button text-white p-3 rounded-full transition"
+          className="ml-3 bg-[#5E3023] text-white p-3 rounded-full transition"
         >
           <FaPaperPlane />
         </button>
       </div>
     </div>
   );
-}
+};
 
 export default UserChatRoom;

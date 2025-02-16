@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   FaMoon,
   FaSun,
@@ -7,23 +7,28 @@ import {
   FaMinus,
   FaBars,
   FaTimes,
+  FaVolumeUp,
+  FaVolumeMute, // Import mute icon
 } from "react-icons/fa";
 
 export const TextViewer = () => {
-  const { hbookTId } = useParams(); // Extract ID from the URL
+  const { hbookTId } = useParams();
+  const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
   const [currentChapter, setCurrentChapter] = useState(null);
   const [fontSize, setFontSize] = useState(16);
-  const [darkMode, setDarkMode] = useState(false); // Default to light mode
+  const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isReading, setIsReading] = useState(false); // Track if speech is playing
+  const [speechUtterance, setSpeechUtterance] = useState(null);
 
   useEffect(() => {
     const fetchChapters = async () => {
       try {
         const response = await fetch(
           `http://localhost:5000/hbooks/${hbookTId}`
-        ); // Fetch chapters using ID from URL
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch chapters");
         }
@@ -44,11 +49,45 @@ export const TextViewer = () => {
     fetchChapters();
   }, [hbookTId]);
 
+  useEffect(() => {
+    if (isReading) {
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+    }
+  }, [currentChapter]);
+
+  useEffect(() => {
+    const handleBackButton = () => {
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+    };
+
+    window.addEventListener("popstate", handleBackButton);
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, []);
+
   const handleZoomIn = () => setFontSize((prev) => prev + 2);
   const handleZoomOut = () =>
     setFontSize((prev) => (prev > 10 ? prev - 2 : prev));
   const toggleDarkMode = () => setDarkMode((prev) => !prev);
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  const handleReadAloud = () => {
+    if (isReading) {
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+    } else if (currentChapter?.Chapter_content) {
+      const utterance = new SpeechSynthesisUtterance(
+        currentChapter.Chapter_content
+      );
+      utterance.onend = () => setIsReading(false); // Reset state when done
+      window.speechSynthesis.speak(utterance);
+      setSpeechUtterance(utterance);
+      setIsReading(true);
+    }
+  };
 
   if (loading) {
     return (
@@ -114,6 +153,16 @@ export const TextViewer = () => {
           >
             {darkMode ? <FaSun /> : <FaMoon />}
           </button>
+          <button
+            onClick={handleReadAloud}
+            className={`px-3 py-1 ${
+              darkMode
+                ? "bg-beige hover:bg-[#E7D8CB] text-black"
+                : "bg-[#5E3023] hover:bg-[#8A573A] text-white"
+            } rounded`}
+          >
+            {isReading ? <FaVolumeMute /> : <FaVolumeUp />}
+          </button>
         </div>
       </div>
 
@@ -153,9 +202,9 @@ export const TextViewer = () => {
           className="flex-1 p-6 overflow-y-auto"
           style={{ fontSize: `${fontSize}px` }}
         >
-          {currentChapter?.Chapter_content?.replace(/\r\n/g, "\n") // Normalize Windows-style line endings
-            ?.replace(/\r/g, "\n") // Normalize old Mac-style line endings
-            ?.split("\n") // Split into paragraphs
+          {currentChapter?.Chapter_content?.replace(/\r\n/g, "\n")
+            ?.replace(/\r/g, "\n")
+            ?.split("\n")
             .map((paragraph, index) => (
               <p key={index} className="mb-4">
                 {paragraph.trim()}

@@ -18,7 +18,7 @@ const Login = () => {
     const checkUserSession = async () => {
       try {
         await account.get();
-        navigate("/"); // Redirect to home if user exists
+        navigate("/"); // Redirect to home if user is already logged in
       } catch (error) {
         console.log("No active session found.");
       }

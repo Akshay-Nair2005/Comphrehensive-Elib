@@ -1,19 +1,21 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { account } from "../../appwritee/appwrite";
+import { FiMenu, FiX } from "react-icons/fi";
 
 const Navv = () => {
   const [user, setUser] = useState(null);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // State for logout modal
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
   const navigate = useNavigate();
 
   useEffect(() => {
     const getUser = async () => {
       try {
-        const userDetails = await account.get(); // Get the current user from Appwrite
-        setUser(userDetails); // Set user info
+        const userDetails = await account.get();
+        setUser(userDetails);
       } catch (err) {
-        setUser(null); // If not logged in, set user to null
+        setUser(null);
       }
     };
 
@@ -22,10 +24,10 @@ const Navv = () => {
 
   const handleLogout = async () => {
     try {
-      await account.deleteSession("current"); // Logout the current session
+      await account.deleteSession("current");
       setUser(null);
       alert("You have been logged out!");
-      navigate("/login"); // Redirect to the login page
+      navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err.message);
     }
@@ -38,17 +40,25 @@ const Navv = () => {
 
   return (
     <>
-      <nav className="text-white bg-[#5E3023]">
-        <div className="container mx-auto flex justify-between items-center p-4">
-          {/* Brand Logo */}
-          <div className="flex justify-between">
-            <NavLink className="pointer-events-auto" to="/">
-              <img className="w-24" src="/images/logoo.svg" alt="Logo" />
-            </NavLink>
+      <nav className="text-white bg-[#5E3023] p-4">
+        <div className="container mx-auto flex justify-between items-center">
+          {/* Logo */}
+          <NavLink to="/">
+            <img className="w-24" src="/images/logoo.svg" alt="Logo" />
+          </NavLink>
+
+          {/* Hamburger Menu (Mobile) */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white text-2xl"
+            >
+              {isMenuOpen ? <FiX /> : <FiMenu />}
+            </button>
           </div>
 
-          {/* Nav Links */}
-          <ul className="flex space-x-6 items-center">
+          {/* Desktop Nav Links */}
+          <ul className="hidden lg:flex space-x-6 items-center">
             <li>
               <NavLink to="/" className={linkClass}>
                 Home
@@ -81,13 +91,12 @@ const Navv = () => {
             </li>
             {user ? (
               <>
-                {/* If user is logged in */}
-                <li className={linkClass}>
+                <li>
                   <NavLink to="/user">Hello, {user.name}</NavLink>
                 </li>
                 <li>
                   <button
-                    onClick={() => setShowLogoutModal(true)} // Show logout modal
+                    onClick={() => setShowLogoutModal(true)}
                     className="text-white bg-red-500 px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
                   >
                     Logout
@@ -96,7 +105,6 @@ const Navv = () => {
               </>
             ) : (
               <>
-                {/* If no user is logged in */}
                 <li>
                   <NavLink to="/login" className={linkClass}>
                     Login
@@ -111,6 +119,91 @@ const Navv = () => {
             )}
           </ul>
         </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden flex flex-col items-center bg-[#5E3023] p-4 space-y-4">
+            <NavLink
+              to="/"
+              className={linkClass}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={linkClass}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/userbooks"
+              className={linkClass}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Your Books
+            </NavLink>
+            <NavLink
+              to="/saved"
+              className={linkClass}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Saved Books
+            </NavLink>
+            <NavLink
+              to="/chat"
+              className={linkClass}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Ai Bot
+            </NavLink>
+            <NavLink
+              to="/room"
+              className={linkClass}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Chat Room
+            </NavLink>
+            {user ? (
+              <>
+                <NavLink
+                  to="/user"
+                  className={linkClass}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Hello, {user.name}
+                </NavLink>
+                <button
+                  onClick={() => {
+                    setShowLogoutModal(true);
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-white bg-red-500 px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  className={linkClass}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/signup"
+                  className={linkClass}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign Up
+                </NavLink>
+              </>
+            )}
+          </div>
+        )}
       </nav>
 
       {/* Logout Confirmation Modal */}
@@ -125,15 +218,15 @@ const Navv = () => {
             </p>
             <div className="flex justify-center space-x-4">
               <button
-                onClick={() => setShowLogoutModal(false)} // Close modal
+                onClick={() => setShowLogoutModal(false)}
                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded-full hover:bg-gray-400 transition duration-300"
               >
                 Cancel
               </button>
               <button
                 onClick={() => {
-                  setShowLogoutModal(false); // Close modal
-                  handleLogout(); // Proceed with logout
+                  setShowLogoutModal(false);
+                  handleLogout();
                 }}
                 className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300"
               >

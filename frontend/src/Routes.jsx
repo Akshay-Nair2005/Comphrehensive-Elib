@@ -15,7 +15,7 @@ import { NewDashboard } from "./pages/trial/NewDashboard";
 import HostedBookInfo from "./pages/HostedBooks/HostedBookInfo";
 import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
-import PdfReader from "./pages/CustomBooks/Pdfreader";
+// import PdfReader from "./pages/CustomBooks/PdfReader";
 import UserProfile from "./pages/User/UserProfile";
 import HomeLayout from "./layouts/HomeLayout"; // Import a separate layout for the homepage
 import AboutUs from "./pages/AboutUs";
@@ -25,6 +25,9 @@ import UserChatApp from "./pages/User/UserChatApp";
 import UserChatRoom from "./pages/User/UserChatRoom";
 import ForgotPassword from "./pages/Auth/ForgetPassword";
 import ResetPassword from "./pages/Auth/ResetPassword";
+import UserEditor from "./pages/HostedBooks/UserEditor";
+import { PdfReader } from "./pages/CustomBooks/PdfReader";
+import { AuthorTextViewer } from "./pages/HostedBooks/AuthorTextViewer";
 
 export const routes = createBrowserRouter([
   {
@@ -39,10 +42,10 @@ export const routes = createBrowserRouter([
     path: "/",
     element: <MainLayout />, // Use MainLayout for other routes with navigation
     children: [
-      { path: "/read", element: <PdfReader /> },
       { path: "/desc/:bookId", element: <PageDescription /> },
       { path: "/hdesc/:hbookId", element: <HbookPageDescription /> },
       { path: "/info", element: <HostedBookInfo /> },
+      { path: "/read", element: <PdfReader /> },
       { path: "/user", element: <UserProfile /> },
       { path: "/about", element: <AboutUs /> },
       { path: "/saved", element: <SavedBooks /> },
@@ -58,6 +61,8 @@ export const routes = createBrowserRouter([
   { path: "/novels", element: <AllNovels /> },
   { path: "/text/:hbookTId", element: <TextViewer /> },
   { path: "/edit/:hbookIdd", element: <CustomEditor /> },
+  { path: "/uedit/:uhbookId", element: <UserEditor /> },
+  { path: "/uview/:ahbookId", element: <AuthorTextViewer /> },
   { path: "/dash", element: <NewDashboard /> },
   { path: "/pdf/:BookId", element: <PdfViewer /> },
   { path: "*", element: <NotFoundPage /> },

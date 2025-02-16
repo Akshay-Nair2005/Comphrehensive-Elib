@@ -9,6 +9,7 @@ export const HbookPageDescription = () => {
   const { hbookId } = useParams(); // Fetch the bookId from the URL params
   const [hbook, setBook] = useState(null);
   const [error, setError] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // Track saving state
   const [loading, setLoading] = useState(true);
   const [showFullNovelDesc, setShowFullNovelDesc] = useState(false);
   const [showFullAuthorDesc, setShowFullAuthorDesc] = useState(false);
@@ -36,12 +37,11 @@ export const HbookPageDescription = () => {
   }, [hbookId]);
 
   const saveBook = async () => {
+    setIsSaving(true); // Start saving state
     try {
-      // 🔹 Get the user details from Appwrite
       const userDetails = await account.get();
       const userrId = userDetails.$id;
 
-      // 🔹 Fetch user details from backend
       const userResponse = await fetch(
         `http://localhost:5000/user/${userrId}/`
       );
@@ -51,17 +51,15 @@ export const HbookPageDescription = () => {
       }
 
       const userData = await userResponse.json();
-
-      // 🔹 Ensure `custombooks` exists
       const updatedBooks = userData.hostedbooks || [];
+      const bookExists = updatedBooks.some((book) => book.$id === hbookId);
 
-      // 🔹 Check if book already exists
-      if (updatedBooks.includes(hbookId)) {
+      if (bookExists) {
         alert("Book already saved!");
         return;
       }
 
-      updatedBooks.push(hbookId); // Append new book
+      updatedBooks.push(hbookId);
 
       const response = await fetch(
         `http://localhost:5000/user/${userrId}/hostedbooks`,
@@ -70,7 +68,7 @@ export const HbookPageDescription = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ hostedbooks: updatedBooks }), // ✅ Fix key name
+          body: JSON.stringify({ hostedbooks: updatedBooks }),
         }
       );
 
@@ -82,6 +80,8 @@ export const HbookPageDescription = () => {
     } catch (error) {
       console.error(error);
       alert("An error occurred while saving the book");
+    } finally {
+      setIsSaving(false); // Reset saving state
     }
   };
 
@@ -158,14 +158,14 @@ export const HbookPageDescription = () => {
               Read
             </Link>
             <button onClick={saveBook} className="btn rounded-full bg-beige">
-              Save
+              {isSaving ? "Saving..." : "Save"}
             </button>
-            <button className="btn rounded-full bg-beige">Audio Book</button>
+
             <Link
               to={`/uedit/${hbook.$id}`}
               className="btn rounded-full bg-beige"
             >
-              Read
+              Contribute
             </Link>
           </div>
         </div>

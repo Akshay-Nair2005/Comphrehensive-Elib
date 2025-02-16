@@ -9,6 +9,7 @@ export const PageDescription = () => {
   const [book, setBook] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false); // 🔹 New state for button loading
   const [showFullNovelDesc, setShowFullNovelDesc] = useState(false);
   const [showFullAuthorDesc, setShowFullAuthorDesc] = useState(false);
 
@@ -35,6 +36,8 @@ export const PageDescription = () => {
   }, [bookId]);
 
   const saveBook = async () => {
+    setSaving(true); // 🔹 Start saving state
+
     try {
       // 🔹 Get the user details from Appwrite
       const userDetails = await account.get();
@@ -42,20 +45,19 @@ export const PageDescription = () => {
 
       // 🔹 Fetch user details from backend
       const userResponse = await fetch(`http://localhost:5000/user/${userId}`);
-      console.log(userResponse);
-
       if (!userResponse.ok) {
         throw new Error("User not found");
       }
 
       const userData = await userResponse.json();
 
-      // 🔹 Ensure `custombooks` exists
+      // 🔹 Ensure custombooks exists
       const updatedBooks = userData.custombooks || [];
 
-      // 🔹 Check if book already exists
-      if (updatedBooks.includes(bookId)) {
+      const bookExists = updatedBooks.some((book) => book.$id === bookId);
+      if (bookExists) {
         alert("Book already saved!");
+        setSaving(false); // 🔹 Reset saving state
         return;
       }
 
@@ -66,22 +68,19 @@ export const PageDescription = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ custombooks: updatedBooks }), // ✅ Fix key name
+        body: JSON.stringify({ custombooks: updatedBooks }),
       });
-      console.log(response);
 
       if (!response.ok) {
         throw new Error("Failed to update the user’s saved books");
       }
 
-      if (response._id === bookId) {
-        alert("Book already saved!");
-      } else {
-        alert("Book saved successfully!");
-      }
+      alert("Book saved successfully!");
     } catch (error) {
       console.error(error);
       alert("An error occurred while saving the book");
+    } finally {
+      setSaving(false); // 🔹 Stop saving state
     }
   };
 
@@ -156,7 +155,7 @@ export const PageDescription = () => {
               Read
             </Link>
             <button onClick={saveBook} className="btn rounded-full">
-              Save
+              {saving ? "Saving..." : "Save"} {/* 🔹 Button text updates */}
             </button>
             <Link to="/read" className="btn rounded-full">
               Audio Book

@@ -91,6 +91,12 @@ const UserBooks = () => {
 
               {/* Read & Edit Buttons */}
               <button
+                onClick={() => navigate(`/uview/${book.$id}`)}
+                className="absolute bottom-28 right-4 bg-button text-white px-4 py-2 rounded-md shadow transition"
+              >
+                View Contributions
+              </button>
+              <button
                 onClick={() => navigate(`/text/${book.$id}`)}
                 className="absolute bottom-16 right-4 bg-button text-white px-4 py-2 rounded-md shadow transition"
               >

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
 
-function ChatApp() {
+const ChatApp = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -169,6 +169,6 @@ function ChatApp() {
       </div>
     </div>
   );
-}
+};
 
 export default ChatApp;

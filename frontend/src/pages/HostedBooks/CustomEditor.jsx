@@ -13,6 +13,7 @@ export const CustomEditor = () => {
   const { hbookIdd } = useParams(); // Extract hostedBookId (hbookIdd) from URL params
   const editorRef = useRef(null);
   const [Chapter_title, setTitle] = useState(""); // State for chapter title
+  const [saving, setSaving] = useState(false);
 
   // Store editor instance in ref
   function handleEditorDidMount(editor) {
@@ -27,6 +28,7 @@ export const CustomEditor = () => {
       alert("Title is required!");
       return;
     }
+    setSaving(true);
 
     try {
       // First, save the chapter to the chapters collection
@@ -79,6 +81,8 @@ export const CustomEditor = () => {
       alert("Chapter Saved.");
       setTitle("");
       editorRef.current.setValue("");
+    } finally {
+      setSaving(false); // Stop showing "Saving..."
     }
   }
 
@@ -101,9 +105,10 @@ export const CustomEditor = () => {
           />
           <button
             onClick={saveValue}
-            className="ml-4 px-6 py-2 font-semibold text-black bg-beige  rounded-lg shadow-md"
+            className="ml-4 px-6 py-2 font-semibold text-black bg-beige rounded-lg shadow-md"
+            disabled={saving}
           >
-            Save Chapter
+            {saving ? "Saving..." : "Save Chapter"}
           </button>
         </div>
       </header>
@@ -111,27 +116,26 @@ export const CustomEditor = () => {
       {/* Editor Section */}
       <div className="flex-grow p-6">
         <div className="h-full rounded-lg shadow-lg bg-gray-900 border border-gray-700">
-          <LiveblocksProvider
+          {/* <LiveblocksProvider
             publicApiKey={
               "pk_dev_Qz2atFlSFAL8PXJQv3V0EwsIrkZ3vmV1uwnDpR3fzPt2_0sVKO8Kt-e2Wric2PcO"
             }
           >
             <RoomProvider id="my-room">
-              <ClientSideSuspense fallback={<div>Loading…</div>}>
-                <Editor
-                  height="100%"
-                  defaultLanguage="plaintext"
-                  defaultValue=""
-                  onMount={handleEditorDidMount}
-                  options={{
-                    minimap: { enabled: false },
-                    scrollBeyondLastLine: false,
-                  }}
-                  // theme="vs-dark"
-                />
-              </ClientSideSuspense>
+              <ClientSideSuspense fallback={<div>Loading…</div>}> */}
+          <Editor
+            height="100%"
+            defaultLanguage="plaintext"
+            defaultValue=""
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+            }}
+          />
+          {/* </ClientSideSuspense>
             </RoomProvider>
-          </LiveblocksProvider>
+          </LiveblocksProvider> */}
         </div>
       </div>
     </div>

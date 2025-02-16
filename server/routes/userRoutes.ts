@@ -17,8 +17,7 @@ router.get("/:id", getUserById);
 router.post("/", createUser);
 router.put("/:id", updateUserBooks);
 router.put("/:hid/hostedbooks", updateUserHbooks);
-router.delete("/:id", deleteUserBooks); // ✅ Use DELETE for deletion
-router.put("/:id/user",usernamedesc ); // ✅ Use DELETE for deletion
-// router.post('/delete-user', deleteuser);
+router.delete("/:id", deleteUserBooks); 
+router.put("/:id/user",usernamedesc ); 
 
 export default router;

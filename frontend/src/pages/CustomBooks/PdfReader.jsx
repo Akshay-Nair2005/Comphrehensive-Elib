@@ -1,91 +1,75 @@
-import React, { useState, useRef } from "react";
-import { Document, Page } from "react-pdf";
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import { useState } from "react";
+import * as pdfjsLib from "pdfjs-dist/webpack";
 
-const PdfReader = () => {
-  const [pdfUrl, setPdfUrl] = useState("");
-  const [numPages, setNumPages] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [sliderValue, setSliderValue] = useState(1);
-  const intervalRef = useRef(null);
+export const PdfReader = () => {
+  const [fileUrl, setFileUrl] = useState("");
+  const [fileContent, setFileContent] = useState("");
+  const [error, setError] = useState(null);
 
-  const handleLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
-  };
+  const fetchFile = async () => {
+    if (!fileUrl) return;
+    setError(null);
+    setFileContent("");
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error("Failed to fetch file");
 
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      clearInterval(intervalRef.current);
-    } else {
-      intervalRef.current = setInterval(() => {
-        setCurrentPage((prev) => (prev < numPages ? prev + 1 : prev));
-      }, 3000); // 3 seconds per page
+      // Get the PDF as a blob
+      const blob = await response.blob();
+      const pdf = await pdfjsLib.getDocument(URL.createObjectURL(blob)).promise;
+
+      // Extract text from the PDF
+      const numPages = pdf.numPages;
+      let content = "";
+      for (let i = 1; i <= numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        textContent.items.forEach((item) => {
+          content += item.str + " ";
+        });
+      }
+      setFileContent(content);
+    } catch (err) {
+      setError(err.message);
     }
-    setIsPlaying(!isPlaying);
   };
 
-  const handleForwardBackward = (step) => {
-    const newPage = Math.min(Math.max(currentPage + step, 1), numPages);
-    setCurrentPage(newPage);
-    setSliderValue(newPage);
-  };
-
-  const handleSliderChange = (value) => {
-    setCurrentPage(value);
-    setSliderValue(value);
+  const narrateText = () => {
+    if (!fileContent) return;
+    const speech = new SpeechSynthesisUtterance(fileContent);
+    window.speechSynthesis.speak(speech);
   };
 
   return (
-    <div className="pdf-reader">
+    <div className="flex flex-col items-center p-6 space-y-4">
+      <h1 className="text-xl font-bold">File Reader</h1>
       <input
         type="text"
-        placeholder="Enter PDF URL"
-        value={pdfUrl}
-        onChange={(e) => setPdfUrl(e.target.value)}
-        className="url-input"
+        placeholder="Enter file URL"
+        value={fileUrl}
+        onChange={(e) => setFileUrl(e.target.value)}
+        className="w-full max-w-md p-2 border rounded"
       />
-      <div className="pdf-container">
-        {pdfUrl && (
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={handleLoadSuccess}
-            className="pdf-document"
-          >
-            <Page pageNumber={currentPage} />
-          </Document>
-        )}
-      </div>
-      <div className="controls">
+      <button
+        onClick={fetchFile}
+        className="px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Read File
+      </button>
+      {fileContent && (
         <button
-          onClick={() => handleForwardBackward(-10)}
-          className="text-white"
+          onClick={narrateText}
+          className="px-4 py-2 bg-green-500 text-white rounded"
         >
-          ⏪ -10 sec
+          Narrate
         </button>
-        <button onClick={handlePlayPause} className="text-white">
-          {isPlaying ? "⏸ Pause" : "▶ Play"}
-        </button>
-        <button
-          onClick={() => handleForwardBackward(10)}
-          className="text-white"
-        >
-          ⏩ +10 sec
-        </button>
-        <input
-          type="range"
-          min="1"
-          max={numPages || 1}
-          value={sliderValue}
-          onChange={(e) => handleSliderChange(Number(e.target.value))}
-          className="slider"
-        />
-        <span>
-          Page {currentPage} of {numPages || 0}
-        </span>
+      )}
+      {error && <p className="text-red-500">Error: {error}</p>}
+      <div className="w-full max-w-md p-4 border rounded bg-gray-100">
+        <pre className="whitespace-pre-wrap text-sm">
+          {fileContent || "File content will appear here..."}
+        </pre>
       </div>
     </div>
   );
 };
-
-export default PdfReader;

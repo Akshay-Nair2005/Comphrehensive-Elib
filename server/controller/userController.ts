@@ -184,31 +184,3 @@ export const usernamedesc = async (req: Request, res: Response) => {
 };
 
 
-export const createContributions = async (req: Request, res: Response) => {
-  try {
-      const { id,userid,hostedbooksid,username,hostedbookname,author_name,chaptertitle,chaptercontent} = req.body;
-
-      if (!id ||!userid || !hostedbooksid || !username || !hostedbookname || !author_name || !chaptertitle || !chaptercontent) {
-          res.status(400).json({ error: "All fields are required." });
-          return;
-      }
-
-      const databaseId = process.env.VITE_DATABASE || "";
-      const collectionId = process.env.VITE_COLLECTION_ID_CONTRIBUTIONS|| "";
-
-      const response = await databases.createDocument(databaseId, collectionId,id , {      
-          userid,
-          hostedbooksid,
-          username,
-          hostedbookname,
-          author_name,
-          chaptertitle,
-          chaptercontent,
-      });
-
-      res.status(201).json(response);
-  } catch (error) {
-      console.error("Error creating User:", error);
-      res.status(500).json({ error: "Failed to create Contribution Document" });
-  }
-} 
