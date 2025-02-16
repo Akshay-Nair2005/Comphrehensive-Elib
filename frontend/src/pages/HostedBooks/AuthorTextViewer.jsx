@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import {
-  FaMoon,
-  FaSun,
-  FaPlus,
-  FaMinus,
-  FaBars,
-  FaTimes,
-} from "react-icons/fa";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { account } from "../../appwritee/appwrite";
 
 export const AuthorTextViewer = () => {
   const { ahbookId } = useParams();
   const [contributions, setContributions] = useState([]);
   const [currentContribution, setCurrentContribution] = useState(null);
-  const [fontSize, setFontSize] = useState(16);
-  const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const fetchContributions = async () => {
       try {
         const user = await account.get();
-        const userid = user.$id;
-        const response = await fetch(`http://localhost:5000/user/${userid}`);
+        setUserId(user.$id);
+
+        const response = await fetch(`http://localhost:5000/user/${user.$id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
@@ -34,11 +27,7 @@ export const AuthorTextViewer = () => {
           (book) => book.$id === ahbookId
         );
 
-        if (matchedBook) {
-          setContributions(matchedBook.contributions || []);
-        } else {
-          setContributions([]);
-        }
+        setContributions(matchedBook ? matchedBook.contributions || [] : []);
       } catch (error) {
         console.error("Error fetching contributions:", error);
       } finally {
@@ -49,27 +38,58 @@ export const AuthorTextViewer = () => {
     fetchContributions();
   }, [ahbookId]);
 
-  if (loading)
-    return <div className="text-center p-6 text-black">Loading...</div>;
+  const handlePublish = async () => {
+    if (!currentContribution) {
+      alert("Please select a chapter to publish.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/chapters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Chapter_title: currentContribution.chaptertitle,
+          Chapter_content: currentContribution.chapter_content,
+          hostedBookId: ahbookId,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to publish chapter");
+      alert("Chapter published successfully!");
+    } catch (error) {
+      console.error("Error publishing chapter:", error);
+      alert("Failed to publish chapter.");
+    }
+  };
+
+  // const handleUpdateStatus = async () => {
+  //   try {
+  //     const response = await fetch(`http://localhost:5000/user/${userId}`, {
+  //       method: "PATCH",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ User_Status: "Writer" }),
+  //     });
+
+  //     if (!response.ok) throw new Error("Failed to update status");
+  //     alert("User status updated to writer!");
+  //   } catch (error) {
+  //     console.error("Error updating status:", error);
+  //     alert("Failed to update user status.");
+  //   }
+  // };
+
+  if (loading) return <div className="text-center p-6">Loading...</div>;
   if (!contributions.length)
-    return (
-      <div className="text-center p-6 text-black">
-        No contributions available.
-      </div>
-    );
+    return <div className="text-center p-6">No contributions available.</div>;
 
   return (
-    <div
-      className={`flex flex-col min-h-screen ${
-        darkMode ? "bg-black text-beige" : "bg-[#FFF6EF] text-black"
-      }`}
-    >
-      {/* Top Bar */}
-      <div className="flex items-center h-16 justify-between px-4 py-2 border-b border-gray-300 dark:border-gray-700">
+    <div className="flex flex-col min-h-screen bg-gray-100 text-black">
+      <div className="flex items-center h-16 justify-between px-4 border-b">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="px-3 py-2 bg-[#5E3023] text-white rounded"
+            className="px-3 py-2 bg-gray-700 text-white rounded"
           >
             {isSidebarOpen ? <FaTimes /> : <FaBars />}
           </button>
@@ -77,14 +97,27 @@ export const AuthorTextViewer = () => {
             {currentContribution?.chaptertitle}
           </h1>
         </div>
+        {currentContribution && (
+          <div className="space-x-4">
+            <button
+              onClick={handlePublish}
+              className="px-4 py-2 bg-button text-white rounded"
+            >
+              Publish Chapter
+            </button>
+            {/* <button
+              onClick={handleUpdateStatus}
+              className="px-4 py-2 bg-blue-600 text-white rounded"
+            >
+              Update to Writer
+            </button> */}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-1">
-        {/* Sidebar for Contributions */}
         <div
-          className={`w-64 border-r border-gray-300 dark:border-gray-700 ${
-            isSidebarOpen ? "block" : "hidden"
-          } sticky top-0 h-screen p-4`}
+          className={`w-64 border-r p-4 ${isSidebarOpen ? "block" : "hidden"}`}
         >
           <h2 className="text-lg font-bold mb-4">Contributions</h2>
           <ul className="space-y-2">
@@ -100,27 +133,15 @@ export const AuthorTextViewer = () => {
           </ul>
         </div>
 
-        {/* Main Viewer */}
-        <div
-          className="flex-1 p-6 overflow-y-auto"
-          style={{ fontSize: `${fontSize}px` }}
-        >
+        <div className="flex-1 p-6 overflow-y-auto">
           {currentContribution ? (
-            <>
-              {/* <h2 className="text-xl font-bold mb-2">
-                {currentContribution.chaptertitle}
-              </h2>
-              <p className="italic text-sm mb-4">
-                By {currentContribution.author_name}
-              </p> */}
-              {currentContribution.chapter_content
-                .split("\n")
-                .map((paragraph, index) => (
-                  <p key={index} className="mb-4">
-                    {paragraph.trim()}
-                  </p>
-                ))}
-            </>
+            currentContribution.chapter_content
+              .split("\n")
+              .map((paragraph, index) => (
+                <p key={index} className="mb-4">
+                  {paragraph.trim()}
+                </p>
+              ))
           ) : (
             <p>Select a chapter to view</p>
           )}
