@@ -54,7 +54,7 @@ const Sidebar = () => {
       <div className="flex flex-col bg-nav text-button w-20 hover:w-60 transition-all duration-300 h-screen group">
         <div className="flex justify-center items-center mt-8">
           <NavLink to="/">
-            <img className="w-16" src="/images/logoo.svg" alt="Logo" />
+            <img className="w-16" src="/images/logoo1.svg" alt="Logo" />
           </NavLink>
         </div>
 
@@ -86,7 +86,7 @@ const Sidebar = () => {
               }
             >
               <FaInfoCircle />
-              <span className="hidden group-hover:inline-block">About</span>
+              <span className="hidden group-hover:inline-block">About Us</span>
             </NavLink>
           </li>
           <li className="relative group">

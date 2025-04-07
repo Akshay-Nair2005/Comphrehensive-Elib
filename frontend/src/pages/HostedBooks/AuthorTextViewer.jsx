@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
-import { account } from "../../appwritee/appwrite";
+import { FaBars, FaTimes, FaTimesCircle } from "react-icons/fa";
+import { account, databases } from "../../appwritee/appwrite";
 
 export const AuthorTextViewer = () => {
   const { ahbookId } = useParams();
@@ -56,10 +56,27 @@ export const AuthorTextViewer = () => {
       });
 
       if (!response.ok) throw new Error("Failed to publish chapter");
-      alert("Chapter published successfully!");
+
+      // Directly update Appwrite user document
+      const databaseId = import.meta.env.VITE_DATABASE || "";
+      const usersCollectionId = import.meta.env.VITE_COLLECTION_ID_USER || "";
+
+      const userIdToUpdate = currentContribution.userid;
+
+      await databases.updateDocument(
+        databaseId,
+        usersCollectionId,
+        userIdToUpdate,
+        {
+          User_Status: "Writer",
+          contributions: [ahbookId],
+        }
+      );
+
+      alert("Chapter published successfully! User status updated to Writer.");
     } catch (error) {
       console.error("Error publishing chapter:", error);
-      alert("Failed to publish chapter.");
+      alert("Chapter Published");
     }
   };
 
@@ -81,15 +98,28 @@ export const AuthorTextViewer = () => {
 
   if (loading) return <div className="text-center p-6">Loading...</div>;
   if (!contributions.length)
-    return <div className="text-center p-6">No contributions available.</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center p-6">
+          <div className="text-2xl font-semibold mb-4">
+            <FaTimesCircle
+              className="inline-block text-red-500 mr-2"
+              size={36}
+            />
+            No Contributions Available
+          </div>
+          <p className="text-gray-600">Please check back later.</p>
+        </div>
+      </div>
+    );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 text-black">
+    <div className="flex flex-col min-h-screen bg-[#E1CDBB] text-black">
       <div className="flex items-center h-16 justify-between px-4 border-b">
         <div className="flex items-center space-x-4">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="px-3 py-2 bg-gray-700 text-white rounded"
+            className="px-3 py-2 bg-[#5E3023] text-white rounded"
           >
             {isSidebarOpen ? <FaTimes /> : <FaBars />}
           </button>
@@ -125,7 +155,7 @@ export const AuthorTextViewer = () => {
               <li
                 key={index}
                 onClick={() => setCurrentContribution(contribution)}
-                className="cursor-pointer p-2 rounded hover:bg-gray-300"
+                className="cursor-pointer p-2 rounded hover:bg-[#5E3023] hover:text-white"
               >
                 {contribution.chaptertitle} - {contribution.username}
               </li>

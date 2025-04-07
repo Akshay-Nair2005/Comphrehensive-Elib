@@ -96,7 +96,7 @@ const HostedBooks = ({ isHome = false }) => {
               placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 rounded-md bg-[#5E3023] text-white placeholder-slate-100 w-1/3"
+              className="p-2 rounded-md border border-[#5E3023]  w-1/3"
             />
             <select
               value={selectedGenre}
@@ -174,7 +174,7 @@ const HostedBooks = ({ isHome = false }) => {
             </Swiper>
           )
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-16">
             {loading
               ? skeletons.map((_, index) => (
                   <div key={index} className="p-4 rounded-md">

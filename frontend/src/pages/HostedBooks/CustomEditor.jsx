@@ -28,6 +28,10 @@ export const CustomEditor = () => {
       alert("Title is required!");
       return;
     }
+    if (!Chapter_content) {
+      alert("No chapter content entered!");
+      return;
+    }
     setSaving(true);
 
     try {

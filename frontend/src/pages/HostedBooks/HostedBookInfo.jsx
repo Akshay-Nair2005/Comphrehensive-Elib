@@ -20,6 +20,20 @@ const HostedBookInfo = () => {
   const bucketid = import.meta.env.VITE_BUCKET_IMAGE_ID;
   const projectid = import.meta.env.VITE_PROJECT_ID;
 
+  const handleClear = () => {
+    setHbookName("");
+    setHbookGenre("");
+    setHbookDesc("");
+    setHbookAuthor("");
+    setHbookAuthDesc("");
+    setHbookNovelImg("");
+    setImagePreview(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
+  };
+
   // Upload the image to Appwrite and get the URL
   const uploadImage = async (file) => {
     if (!file) {
@@ -43,8 +57,15 @@ const HostedBookInfo = () => {
   const handleSubmit = async () => {
     setLoading(true);
 
-    if (!hbookNovelImg) {
-      alert("Please upload a cover image.");
+    if (
+      !hbookNovelImg ||
+      !hbookName ||
+      !hbookGenre ||
+      !hbookDesc ||
+      !hbookAuthor ||
+      !hbookAuthDesc
+    ) {
+      alert("Please fill all details");
       setLoading(false);
       return;
     }
@@ -125,6 +146,7 @@ const HostedBookInfo = () => {
 
   const triggerFileInput = () => {
     fileInputRef.current.click();
+    // setImagePreview(URL.createObjectURL(file));
   };
 
   return (
@@ -245,8 +267,11 @@ const HostedBookInfo = () => {
           </div>
 
           <div className="flex justify-end mt-6 gap-4">
-            <button className="px-6 py-2 bg-beige text-black rounded-lg font-medium hover:bg-red-500 transition">
-              Cancel
+            <button
+              className="px-6 py-2 bg-beige text-black rounded-lg font-medium hover:bg-red-500 transition"
+              onClick={handleClear}
+            >
+              Clear
             </button>
             <button
               onClick={handleSubmit}

@@ -8,8 +8,10 @@ import {
   FaBars,
   FaTimes,
   FaVolumeUp,
-  FaVolumeMute, // Import mute icon
+  FaVolumeMute,
+  FaBookOpen, // Import mute icon
 } from "react-icons/fa";
+import Navv from "../../components/LinkComponents/Navv"; // Adjust the import path as necessary
 
 export const TextViewer = () => {
   const { hbookTId } = useParams();
@@ -97,7 +99,18 @@ export const TextViewer = () => {
 
   if (!chapters.length) {
     return (
-      <div className="text-center p-6 text-black">No chapters available.</div>
+      <div>
+        <Navv />
+        <div className="flex flex-col items-center justify-center min-h-screen bg-beige text-black dark:bg-black  dark:text-[#E1CDBB]">
+          <div className="text-4xl mb-4">
+            <FaBookOpen />
+          </div>
+          <h1 className="text-2xl font-bold mb-2">No Chapters Available</h1>
+          <p className="text-lg">
+            Please check back later or try another book.
+          </p>
+        </div>
+      </div>
     );
   }
 

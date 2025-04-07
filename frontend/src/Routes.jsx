@@ -33,10 +33,7 @@ export const routes = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout />, // Use HomeLayout for the homepage
-    children: [
-      { path: "/", element: <HomePage /> },
-      { path: "/room", element: <UserChatRoom /> },
-    ],
+    children: [{ path: "/", element: <HomePage /> }],
   },
   {
     path: "/",
@@ -54,6 +51,7 @@ export const routes = createBrowserRouter([
     ],
   },
   { path: "/login", element: <Login /> },
+  { path: "/room", element: <UserChatRoom /> },
   { path: "/signup", element: <Signup /> },
   { path: "/forgetpass", element: <ForgotPassword /> },
   { path: "/resetpass", element: <ResetPassword /> },

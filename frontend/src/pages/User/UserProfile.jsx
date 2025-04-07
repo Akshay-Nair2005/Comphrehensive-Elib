@@ -23,30 +23,31 @@ const UserProfile = () => {
   const usercollectionid = import.meta.env.VITE_COLLECTION_ID_USER;
   const projectid = import.meta.env.VITE_PROJECT_ID;
 
+  const fetchUserDetails = async () => {
+    try {
+      const userDetails = await account.get();
+      setUser(userDetails);
+      setName(userDetails.name);
+      const userDoc = await databases.getDocument(
+        databaseid,
+        usercollectionid,
+        userDetails.$id
+      );
+
+      setDescription(userDoc.User_desc);
+      setStatus(userDoc.User_Status);
+      setProfilePhoto(userDoc.userprofilephoto || "");
+
+      setCustomBooksCount(userDoc.custombooks?.length || 0);
+      setHostedBooksCount(userDoc.hostedbooks?.length || 0);
+      setCreatedHostedBooksCount(userDoc.createdhostedbooks?.length || 0);
+    } catch (error) {
+      console.error("Failed to fetch user details:", error.message);
+    }
+  };
+
+  // Call fetchUserDetails inside useEffect
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const userDetails = await account.get();
-        setUser(userDetails);
-        setName(userDetails.name);
-
-        const userDoc = await databases.getDocument(
-          databaseid,
-          usercollectionid,
-          userDetails.$id
-        );
-
-        setDescription(userDoc.User_desc);
-        setStatus(userDoc.User_Status);
-        setProfilePhoto(userDoc.userprofilephoto || "");
-
-        setCustomBooksCount(userDoc.custombooks?.length || 0);
-        setHostedBooksCount(userDoc.hostedbooks?.length || 0);
-        setCreatedHostedBooksCount(userDoc.createdhostedbooks?.length || 0);
-      } catch (error) {
-        console.error("Failed to fetch user details:", error.message);
-      }
-    };
     fetchUserDetails();
   }, []);
 
@@ -60,6 +61,9 @@ const UserProfile = () => {
 
       alert("Profile updated successfully!");
       setIsEditing(false);
+
+      // Refetch updated user details
+      fetchUserDetails();
     } catch (error) {
       alert("Failed to update profile: " + error.message);
     }
@@ -164,7 +168,8 @@ const UserProfile = () => {
             Description
           </label>
           {isEditing ? (
-            <textarea
+            <input
+              type="text"
               className="w-full border p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -174,26 +179,16 @@ const UserProfile = () => {
           )}
         </div>
 
-        <div className="mt-8 grid grid-cols-3 gap-6">
+        <div className="mt-8 grid grid-cols-2 gap-6">
           <Link
             to="/saved"
             className="bg-button p-6 rounded-lg shadow-md text-center"
           >
             <FaBook className="text-white text-4xl mx-auto" />
-            <p className="text-lg font-semibold mt-2 text-white">
-              Custom Books
+            <p className="text-lg font-semibold mt-2 text-white">Saved Books</p>
+            <p className="text-2xl font-bold text-white">
+              {customBooksCount + hostedBooksCount}
             </p>
-            <p className="text-2xl font-bold text-white">{customBooksCount}</p>
-          </Link>
-          <Link
-            to="/saved"
-            className="bg-button p-6 rounded-lg shadow-md text-center"
-          >
-            <FaBook className="text-white text-4xl mx-auto" />
-            <p className="text-lg font-semibold mt-2 text-white">
-              Hosted Books
-            </p>
-            <p className="text-2xl font-bold text-white">{hostedBooksCount}</p>
           </Link>
           <Link
             to="/userbooks"
@@ -208,12 +203,6 @@ const UserProfile = () => {
         </div>
 
         <div className="mt-6 flex justify-end">
-          {/* <button
-            onClick={handleDeleteAccount}
-            className="bg-red-600 text-white px-6 py-2 rounded-lg flex items-center shadow-md hover:bg-red-700 transition"
-          >
-            <FaTrash className="mr-2" /> Delete Account
-          </button> */}
           {isEditing ? (
             <button
               onClick={handleSave}

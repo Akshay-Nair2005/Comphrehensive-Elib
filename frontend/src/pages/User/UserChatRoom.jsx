@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { databases, client, account, storage } from "../../appwritee/appwrite";
 import { ID } from "appwrite";
 import { FaPaperPlane } from "react-icons/fa";
+import { FaFileAlt } from "react-icons/fa";
+import { FaPaperclip } from "react-icons/fa";
+import { RiFileUploadLine } from "react-icons/ri";
+import Navv from "../../components/LinkComponents/Navv";
 
 const DATABASE_ID = "674ad544002c56d61b63";
 const COLLECTION_ID = "67ab0db300206486f186";
@@ -99,10 +103,7 @@ const UserChatRoom = () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      <div className="bg-[#5E3023] text-white text-lg font-semibold py-4 px-6 shadow-md sticky top-0">
-        Novel Chat Room
-      </div>
-
+      <Navv />
       <div className="flex-1 bg-gray-100 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div
@@ -119,7 +120,7 @@ const UserChatRoom = () => {
               }`}
             >
               <span className="block text-sm font-semibold">
-                {msg.username || "Unknown"}
+                {userDetails.name || "Unknown"}
               </span>
               {msg.message && <p className="text-sm">{msg.message}</p>}
 
@@ -159,7 +160,8 @@ const UserChatRoom = () => {
                 </div>
               ) : msg.filetype === "application/pdf" ? (
                 <div className="bg-gray-200 p-2 rounded-md mt-2 flex items-center">
-                  📄 {msg.filename || "Document"}
+                  <FaFileAlt size={24} className="text-gray-600" />{" "}
+                  <p className="text-black">{msg.filename || "Document"}</p>
                   <a
                     href={msg.fileurl}
                     target="_blank"
@@ -170,7 +172,8 @@ const UserChatRoom = () => {
                 </div>
               ) : msg.fileurl ? (
                 <div className="bg-gray-200 p-2 rounded-md mt-2 flex items-center">
-                  📎 {msg.filename || "Unknown File"}
+                  <FaFileAlt size={24} className="text-black" />{" "}
+                  <p className="text-black">{msg.filename || "Unknown File"}</p>
                   <a
                     href={msg.fileurl}
                     target="_blank"
@@ -188,6 +191,7 @@ const UserChatRoom = () => {
       <div className="flex items-center bg-white p-3 border-t shadow-md">
         <input
           type="file"
+          accept="image/*, application/pdf"
           onChange={handleFileUpload}
           className="hidden"
           id="fileInput"
@@ -196,12 +200,15 @@ const UserChatRoom = () => {
           htmlFor="fileInput"
           className="cursor-pointer text-blue-500 mr-2"
         >
-          📎
+          {/* 📎 */}
+          <FaPaperclip size={20} className="text-gray-500" />
         </label>
 
         {file && (
           <div className="bg-gray-200 p-2 rounded-md flex items-center">
-            📂 {file.name}
+            {/* 📂  */}
+            <FaFileAlt size={24} className="text-gray-600" />
+            {file.name}
             <button className="ml-2 text-red-500" onClick={() => setFile(null)}>
               ✖
             </button>
@@ -214,6 +221,12 @@ const UserChatRoom = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault(); // Prevent new line in input
+              sendMessage();
+            }
+          }}
         />
 
         <button

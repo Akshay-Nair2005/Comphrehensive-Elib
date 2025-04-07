@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Hbooklisting = ({ hnovel }) => {
   return (
-    <div className="w-full flex flex-col items-center justify-center mt-10 px-4 max-md:px-10 max-lg:px-20 max-md:h-full">
+    <div className="w-full flex flex-col items-center justify-center mt-10 px-4 max-md:px-10 max-lg:px-20 max-md:h-full mb-8">
       <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg h-96 bg-black/30 overflow-hidden border border-card rounded-lg transition-transform duration-300 hover:scale-105 group">
         <img
           src={hnovel.hbook_novelimg}

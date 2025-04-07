@@ -35,13 +35,13 @@ body {
 /* Handle */
 ::-webkit-scrollbar-thumb {
   height: 10px;
-  background: rgb(203, 202, 202);
+  background: #895142;
   border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: gray;
+  background: #5E3023;
 }
 
 .bg-button {

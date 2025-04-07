@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { account } from "../../appwritee/appwrite";
+import { FaBookOpen } from "react-icons/fa";
 import { FiMoreVertical } from "react-icons/fi"; // Menu Icon
 import { AiOutlineDelete, AiOutlineInfoCircle } from "react-icons/ai"; // Info & Delete Icons
 
@@ -84,18 +85,12 @@ const UserBooks = () => {
               <p className="text-gray-600 mb-2 font-medium">
                 {book.hbook_genre}
               </p>
-              <p className="text-gray-600 text-sm mb-2">{book.hbook_desc}</p>
               <p className="text-gray-600 text-sm font-medium">
                 Author: {book.hbook_author}
               </p>
 
               {/* Read & Edit Buttons */}
-              <button
-                onClick={() => navigate(`/uview/${book.$id}`)}
-                className="absolute bottom-28 right-4 bg-button text-white px-4 py-2 rounded-md shadow transition"
-              >
-                View Contributions
-              </button>
+
               <button
                 onClick={() => navigate(`/text/${book.$id}`)}
                 className="absolute bottom-16 right-4 bg-button text-white px-4 py-2 rounded-md shadow transition"
@@ -115,7 +110,7 @@ const UserBooks = () => {
                   onClick={() =>
                     setMenuOpen((prev) => (prev === book.$id ? null : book.$id))
                   }
-                  className="text-white hover:bg-gray-900 bg-gray-600 border rounded-full p-2"
+                  className="text-white hover:bg-[#5E3023] bg-[#5E3023] border rounded-full p-2"
                 >
                   <FiMoreVertical size={20} />
                 </button>
@@ -129,6 +124,13 @@ const UserBooks = () => {
                     >
                       <AiOutlineInfoCircle className="mr-2" />
                       Novel Info
+                    </button>
+                    <button
+                      onClick={() => navigate(`/uview/${book.$id}`)}
+                      className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100 w-full text-left"
+                    >
+                      <FaBookOpen className="mr-2" />
+                      Contribution
                     </button>
                     <button
                       onClick={() => handleDelete(book.$id)}

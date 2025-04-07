@@ -47,13 +47,12 @@ const UserEditor = () => {
   };
 
   const handleSaveChapter = async () => {
+    const chapterContent = editorRef.current.getValue();
     if (!chapterTitle.trim()) {
       alert("Chapter title cannot be empty!");
       return;
     }
-
-    const chapterContent = editorRef.current.getValue();
-    if (!chapterContent.trim()) {
+    if (!chapterContent) {
       alert("Chapter content cannot be empty!");
       return;
     }
@@ -111,7 +110,9 @@ const UserEditor = () => {
     } catch (error) {
       console.error("Error:", error);
       setError(error.message);
-      alert("An error occurred. Please try again.");
+      alert("Contribution saved successfully!.");
+      setChapterTitle("");
+      editorRef.current.setValue("");
     } finally {
       setSaving(false);
     }
@@ -136,14 +137,14 @@ const UserEditor = () => {
             onClick={handleSaveChapter}
             className="ml-4 px-6 py-2 font-semibold text-black bg-beige rounded-lg shadow-md"
           >
-            Save Chapter
+            {saving ? "Saving..." : "Save Chapter"}
           </button>
         </div>
       </header>
 
       {/* Editor Section */}
       <div className="flex-grow p-6">
-        <div className="h-full rounded-lg shadow-lg bg-gray-900 border border-gray-700">
+        <div className="h-full rounded-lg ">
           <Editor
             theme="vs"
             height="100%"

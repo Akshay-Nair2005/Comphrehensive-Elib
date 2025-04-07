@@ -44,7 +44,7 @@ const Navv = () => {
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
           <NavLink to="/">
-            <img className="w-24" src="/images/logoo.svg" alt="Logo" />
+            <img className="w-24" src="/images/logoo1.svg" alt="Logo" />
           </NavLink>
 
           {/* Hamburger Menu (Mobile) */}

@@ -84,12 +84,14 @@ const SavedBooks = () => {
 
   return (
     <section className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Saved Books</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        Saved Books
+      </h1>
 
       {/* Custom Books Section */}
       <div className="mb-8">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Custom Books
+          Books by Renowned authors
         </h2>
         {customBooks.length > 0 ? (
           renderBooks(customBooks, "custom")
@@ -101,7 +103,7 @@ const SavedBooks = () => {
       {/* Hosted Books Section */}
       <div>
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Hosted Books
+          Books by Upcoming Authors
         </h2>
         {hostedBooks.length > 0 ? (
           renderBooks(hostedBooks, "hosted")

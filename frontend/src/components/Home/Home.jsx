@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -39,7 +39,7 @@ export const Home = () => {
     clearInterval(intervalRef.current); // Clear previous interval
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000);
+    }, 10000);
   };
 
   useEffect(() => {
@@ -130,15 +130,17 @@ export const Home = () => {
 
       <div className="flex flex-col lg:flex-row gap-8 p-6 mt-4">
         <div className="w-full lg:w-[64vw] flex justify-center items-center">
-          <img
-            src={currentImage.Novel_img}
-            alt={currentImage.Novel_Name}
-            className="rounded-2xl shadow-xl w-full max-h-screen object-contain border-2 border-card"
-          />
+          <Link to={`/desc/${currentImage.$id}`}>
+            <img
+              src={currentImage.Novel_img}
+              alt={currentImage.Novel_Name}
+              className="w-[500px] h-[500px] rounded-2xl shadow-xl object-cover border-2 border-card"
+            />
+          </Link>
         </div>
 
         <div className="w-full lg:w-3/4">
-          <div className="mt-4 lg:mt-24">
+          <div className="mt-4 lg:mt-24 min-h-32 min-w-44">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentImage.Novel_Name}

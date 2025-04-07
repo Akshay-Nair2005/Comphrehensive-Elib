@@ -33,22 +33,43 @@ const ChatApp = () => {
 
     try {
       const response = await axios({
-        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${
+        url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${
           import.meta.env.VITE_API_GENERATIVE_LANGUAGE_CLIENT
         }`,
         method: "post",
         data: {
-          contents: [{ parts: [{ text: question }] }],
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are a literature expert and a story book and poem write that writes stories in chapters, provides information about books and helps with meaning of words, chapter writing, poem writing. If the question is unrelated to these topics, respond with "I can only discuss literature-related topics." Here is the question: ${currentQuestion}`,
+                },
+              ],
+            },
+          ],
         },
       });
 
       const aiResponse =
         response["data"]["candidates"][0]["content"]["parts"][0]["text"];
-      setChatHistory((prev) => [
-        ...prev,
-        { type: "answer", content: aiResponse },
-      ]);
-      setAnswer(aiResponse);
+
+      // Filter out non-literature responses
+      if (!isLiteratureRelated(aiResponse)) {
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            type: "answer",
+            content: "I can only discuss literature-related topics.",
+          },
+        ]);
+        setAnswer("I can only discuss literature-related topics.");
+      } else {
+        setChatHistory((prev) => [
+          ...prev,
+          { type: "answer", content: aiResponse },
+        ]);
+        setAnswer(aiResponse);
+      }
     } catch (error) {
       console.log(error);
       setAnswer("Sorry - Something went wrong. Please try again!");
@@ -56,8 +77,35 @@ const ChatApp = () => {
     setGeneratingAnswer(false);
   }
 
+  // Function to filter literature-related responses
+  function isLiteratureRelated(text) {
+    const keywords = [
+      "novel",
+      "story",
+      "plot",
+      "character",
+      "literature",
+      "writing",
+      "author",
+      "poetry",
+      "fiction",
+      "prose",
+      "narrative",
+      "literary",
+      "book",
+      "manuscript",
+      "publishing",
+      "genre",
+      "dialogue",
+      "theme",
+      "book",
+      "chapter",
+    ];
+    return keywords.some((keyword) => text.toLowerCase().includes(keyword));
+  }
+
   return (
-    <div className=" bg-white">
+    <div className="bg-white">
       <div className="h-full max-w-4xl mx-auto flex flex-col p-3">
         {/* Fixed Header */}
         <header className="text-center py-4">
@@ -66,10 +114,11 @@ const ChatApp = () => {
           </h1>
         </header>
 
-        {/* Scrollable Chat Container - Updated className */}
+        {/* Scrollable Chat Container */}
         <div
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto mb-4 rounded-lg bg-[#E1CDBB] shadow-lg p-4 hide-scrollbar"
+          className="flex-1 overflow-y-auto min-h-[300px] max-h-[500px] mb-4 rounded-lg bg-[#E1CDBB] shadow-lg p-4 scrollbar-thin scrollbar-thumb-brown-700 scrollbar-track-brown-300"
+          style={{ scrollBehavior: "smooth" }}
         >
           {chatHistory.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-6">
@@ -103,28 +152,26 @@ const ChatApp = () => {
               </div>
             </div>
           ) : (
-            <>
-              {chatHistory.map((chat, index) => (
+            chatHistory.map((chat, index) => (
+              <div
+                key={index}
+                className={`mb-4 ${
+                  chat.type === "question" ? "text-right" : "text-left"
+                }`}
+              >
                 <div
-                  key={index}
-                  className={`mb-4 ${
-                    chat.type === "question" ? "text-right" : "text-left"
+                  className={`inline-block max-w-[80%] p-3 rounded-lg overflow-auto hide-scrollbar ${
+                    chat.type === "question"
+                      ? "bg-button text-white rounded-br-none"
+                      : "bg-[#E1CDBB] text-brown-800 rounded-bl-none"
                   }`}
                 >
-                  <div
-                    className={`inline-block max-w-[80%] p-3 rounded-lg overflow-auto hide-scrollbar ${
-                      chat.type === "question"
-                        ? "bg-button text-white rounded-br-none"
-                        : "bg-[#E1CDBB] text-brown-800 rounded-bl-none"
-                    }`}
-                  >
-                    <ReactMarkdown className="overflow-auto hide-scrollbar">
-                      {chat.content}
-                    </ReactMarkdown>
-                  </div>
+                  <ReactMarkdown className="overflow-auto hide-scrollbar">
+                    {chat.content}
+                  </ReactMarkdown>
                 </div>
-              ))}
-            </>
+              </div>
+            ))
           )}
           {generatingAnswer && (
             <div className="text-left">

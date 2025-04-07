@@ -68,12 +68,13 @@ const ContactUs = () => {
             <label htmlFor="message" className="block text-lg mb-2 text-color">
               Message:
             </label>
-            <textarea
+            <input
+              type="text"
               id="message"
               name="message"
               required
               className="w-full sm:w-[80%] p-2 border border-gray-300 rounded text-color"
-            ></textarea>
+            ></input>
           </div>
           <button
             type="submit"

@@ -100,7 +100,7 @@ const FeaturedBook = ({ isHome }) => {
               placeholder="Search by name"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 rounded-md w-1/3 md:w-1/2 bg-[#5E3023] text-white"
+              className="px-4 py-2 rounded-md w-1/3 md:w-1/2 border-[#5E3023] border"
             />
             <select
               value={selectedGenre}
@@ -171,21 +171,21 @@ const FeaturedBook = ({ isHome }) => {
                 >
                   <Skeleton
                     height={200}
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
+                    baseColor="#E1CDBB"
+                    highlightColor="#5E3023"
                   />
                   <Skeleton
                     height={24}
                     className="mt-4"
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
+                    baseColor="#E1CDBB"
+                    highlightColor="#5E3023"
                   />
                   <Skeleton
                     height={16}
                     width="80%"
                     className="mt-2"
-                    baseColor="#2d3748"
-                    highlightColor="#4a5568"
+                    baseColor="#E1CDBB"
+                    highlightColor="#5E3023"
                   />
                 </div>
               ))}
